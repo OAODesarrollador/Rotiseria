@@ -59,7 +59,7 @@ export async function fetchCatalog() {
             descripcion: c.description,
             precio: c.price,
             items: c.items,
-            imagen: c.image,
+            imagen: normalizeImageUrl(c.image),
             destacado: c.highlighted
         }));
 

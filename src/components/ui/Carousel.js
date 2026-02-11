@@ -9,6 +9,19 @@ export default function Carousel({ items }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const { addToCart } = useCart();
 
+    const getImgSrc = (src) => {
+        const raw = src || '/images/Logo.jpg';
+        try {
+            const u = new URL(raw, 'http://localhost');
+            if (u.hostname && (u.hostname.includes('drive.google.com') || u.hostname.includes('lh3.googleusercontent.com'))) {
+                return `/api/image/proxy?url=${encodeURIComponent(raw)}`;
+            }
+        } catch {
+            // Keep original src if URL parsing fails
+        }
+        return raw;
+    };
+
     // Auto-play
     useEffect(() => {
         const timer = setInterval(() => {
@@ -29,7 +42,7 @@ export default function Carousel({ items }) {
                 >
                     {/* Left Column: Image */}
                     <div className={styles.imageSide}>
-                        <img src={item.imagen} alt={item.nombre} className={styles.image} />
+                        <img src={getImgSrc(item.imagen)} alt={item.nombre} className={styles.image} />
                     </div>
 
                     {/* Right Column: Text */}
