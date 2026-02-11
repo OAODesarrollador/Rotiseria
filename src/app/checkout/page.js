@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { fetchCatalog } from '@/lib/catalog';
 import CheckoutForm from '@/components/business/CheckoutForm';
 
@@ -13,7 +14,9 @@ export default async function Page() {
 
     return (
         <div className="container">
-            <CheckoutForm whatsappNumber={config?.whatsapp} />
+            <Suspense fallback={<div>Cargando checkout...</div>}>
+                <CheckoutForm whatsappNumber={config?.whatsapp} />
+            </Suspense>
         </div>
     );
 }

@@ -56,3 +56,27 @@
     color: #666;
     font-size: 0.9rem;
 }
+
+@media (max-width: 900px) {
+    .container {
+        gap: 24px;
+    }
+
+    .column {
+        min-width: 220px;
+    }
+}
+
+@media (max-width: 600px) {
+    .footer {
+        padding: 32px 16px 16px;
+    }
+
+    .container {
+        flex-direction: column;
+    }
+
+    .mapContainer {
+        height: 200px;
+    }
+}

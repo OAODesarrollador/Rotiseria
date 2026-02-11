@@ -56,6 +56,7 @@ img {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 20px;
+  width: 100%;
 }
 
 .section-title {
@@ -66,4 +67,25 @@ img {
   font-family: var(--font-title);
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --header-height: 64px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0 14px;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
 }

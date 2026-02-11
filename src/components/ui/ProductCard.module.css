@@ -86,3 +86,27 @@
     cursor: not-allowed;
     background: #333;
 }
+
+@media (max-width: 900px) {
+    .imageContainer {
+        height: 180px;
+    }
+}
+
+@media (max-width: 600px) {
+    .imageContainer {
+        height: 150px;
+    }
+
+    .title {
+        font-size: 1rem;
+    }
+
+    .price {
+        font-size: 1rem;
+    }
+
+    .description {
+        font-size: 0.85rem;
+    }
+}

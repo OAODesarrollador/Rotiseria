@@ -118,7 +118,7 @@
 @media (max-width: 900px) {
     .carouselContainer {
         height: auto;
-        min-height: 600px;
+        min-height: 560px;
     }
 
     .slide {
@@ -154,5 +154,33 @@
         bottom: 10px;
         right: 50%;
         transform: translateX(50%);
+    }
+}
+
+@media (max-width: 600px) {
+    .carouselContainer {
+        min-height: 520px;
+    }
+
+    .contentSide {
+        padding: 24px 16px;
+    }
+
+    .title {
+        font-size: 1.6rem;
+    }
+
+    .description {
+        font-size: 0.95rem;
+    }
+
+    .price {
+        font-size: 1.4rem;
+    }
+
+    .actionRow {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 20px;
     }
 }

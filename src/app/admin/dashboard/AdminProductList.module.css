@@ -362,6 +362,20 @@
     }
 }
 
+@media (max-width: 600px) {
+    .logoutBtn {
+        width: 100%;
+    }
+
+    .filters {
+        min-width: 0;
+    }
+
+    .tableWrapper {
+        margin: 0 -0.5rem;
+    }
+}
+
 .message {
     padding: 1rem 1.5rem;
     border-radius: 6px;

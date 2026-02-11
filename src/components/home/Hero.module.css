@@ -75,3 +75,23 @@
         font-size: 1.2rem;
     }
 }
+
+@media (max-width: 480px) {
+    .hero {
+        min-height: 320px;
+        height: 50vh;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .cta {
+        font-size: 1rem;
+        padding: 10px 24px;
+    }
+}
