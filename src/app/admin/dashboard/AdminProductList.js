@@ -59,12 +59,6 @@ export default function AdminProductList() {
         }
     };
 
-    // Logout
-    const handleLogout = () => {
-        router.push('/admin');
-        router.refresh();
-    };
-
     // Filtrar productos
     const filteredProducts = products.filter(p => {
         const matchesSearch = p.nombre.toLowerCase().includes(searchTerm.toLowerCase());
@@ -86,15 +80,15 @@ export default function AdminProductList() {
                     <h1>📦 Gestión de Productos</h1>
                     <p className={styles.subtitle}>Administra precios, descripciones, imágenes y disponibilidad</p>
                 </div>
-                <div style={{display: 'flex', gap: '0.5rem'}}>
+                <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
+                    <button onClick={() => router.push('/admin/dashboard')} className={`btn btn-secondary ${styles.menuBtn}`} title="Menú Principal">
+                        🧭 Menú
+                    </button>
                     <button onClick={() => router.push('/admin/combos')} className={`btn btn-secondary ${styles.combosBtn}`} title="Gestionar Combos">
                         🍱 Combos
                     </button>
                     <button onClick={() => router.push('/admin/categories')} className={`btn btn-secondary ${styles.categoriesBtn}`} title="Gestionar Categorías">
                         🗂️ Categorías
-                    </button>
-                    <button onClick={handleLogout} className={`btn btn-danger ${styles.logoutBtn}`}>
-                        🚪 Salir
                     </button>
                 </div>
             </div>

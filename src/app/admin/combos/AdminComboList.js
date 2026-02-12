@@ -56,11 +56,6 @@ export default function AdminComboList() {
         }
     };
 
-    const handleLogout = () => {
-        router.push('/admin');
-        router.refresh();
-    };
-
     const filteredCombos = combos.filter(c =>
         c.nombre.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -79,9 +74,6 @@ export default function AdminComboList() {
                 <div className={styles.headerActions}>
                     <button onClick={() => router.push('/admin/dashboard')} className={`btn btn-secondary ${styles.backBtn}`}>
                         ← Volver
-                    </button>
-                    <button onClick={handleLogout} className={`btn btn-danger ${styles.logoutBtn}`}>
-                        🚪 Salir
                     </button>
                 </div>
             </div>

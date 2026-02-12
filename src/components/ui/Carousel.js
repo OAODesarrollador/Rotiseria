@@ -22,11 +22,19 @@ export default function Carousel({ items }) {
         return raw;
     };
 
+    const goToNextSlide = () => {
+        setCurrentIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
+    };
+
+    const goToPrevSlide = () => {
+        setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
+    };
+
     // Auto-play
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
-        }, 5000);
+        }, 4000);
 
         return () => clearInterval(timer);
     }, [items.length]);
@@ -66,6 +74,24 @@ export default function Carousel({ items }) {
                 </div>
             ))}
 
+            <button
+                type="button"
+                className={`${styles.arrow} ${styles.arrowLeft}`}
+                onClick={goToPrevSlide}
+                aria-label="Imagen anterior"
+            >
+                &#10094;
+            </button>
+
+            <button
+                type="button"
+                className={`${styles.arrow} ${styles.arrowRight}`}
+                onClick={goToNextSlide}
+                aria-label="Imagen siguiente"
+            >
+                &#10095;
+            </button>
+
             <div className={styles.controls}>
                 {items.map((_, idx) => (
                     <div
@@ -78,3 +104,4 @@ export default function Carousel({ items }) {
         </div>
     );
 }
+

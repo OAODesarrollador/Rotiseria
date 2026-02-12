@@ -1,8 +1,36 @@
-import AdminProductList from './AdminProductList';
+import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import styles from './DashboardMenu.module.css';
 
-export const revalidate = 0; // Always fresh data for admin
+export const revalidate = 0;
+
+const options = [
+    {
+        href: '/admin/products',
+        title: 'Productos',
+        description: 'Crear, editar, eliminar y actualizar disponibilidad de productos.',
+        icon: '📦'
+    },
+    {
+        href: '/admin/combos',
+        title: 'Combos',
+        description: 'Gestionar combos, precios, items y contenido destacado.',
+        icon: '🍱'
+    },
+    {
+        href: '/admin/categories',
+        title: 'Categorías',
+        description: 'Renombrar y depurar categorías para mantener ordenado el catálogo.',
+        icon: '🗂️'
+    },
+    {
+        href: '/admin/statistics',
+        title: 'Estadísticas',
+        description: 'Ver métricas rápidas de productos, combos y categorías.',
+        icon: '📊'
+    }
+];
 
 export default async function AdminDashboard() {
     const cookieStore = cookies();
@@ -13,8 +41,26 @@ export default async function AdminDashboard() {
     }
 
     return (
-        <div style={{ paddingTop: '40px' }}>
-            <AdminProductList />
-        </div>
+        <main className={styles.container}>
+            <header className={styles.header}>
+                <div>
+                    <h1>Panel de Mantenimiento</h1>
+                    <p>Selecciona el módulo que quieres administrar</p>
+                </div>
+                <Link href="/admin" className={styles.exitLink}>
+                    🚪 Salir del sistema
+                </Link>
+            </header>
+
+            <section className={styles.grid}>
+                {options.map((option) => (
+                    <Link key={option.href} href={option.href} className={styles.card}>
+                        <span className={styles.icon}>{option.icon}</span>
+                        <h2>{option.title}</h2>
+                        <p>{option.description}</p>
+                    </Link>
+                ))}
+            </section>
+        </main>
     );
 }
