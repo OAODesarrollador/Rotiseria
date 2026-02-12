@@ -1,13 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { formatPrice } from '@/lib/utils';
 import styles from './statistics.module.css';
+
+const PIE_COLORS = ['#ef4444', '#f97316', '#14b8a6', '#3b82f6', '#a855f7', '#6b7280'];
 
 export default function StatisticsClient() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState(null);
+    const [salesPeriod, setSalesPeriod] = useState('month');
     const [stats, setStats] = useState({
         products: 0,
         availableProducts: 0,
@@ -18,6 +22,13 @@ export default function StatisticsClient() {
         categories: 0,
         topCategories: []
     });
+    const [salesStats, setSalesStats] = useState({
+        period: 'month',
+        topProducts: [],
+        otherProducts: { quantity: 0, percentage: 0 },
+        totals: { unitsSold: 0, orders: 0, revenue: 0 },
+        salesSeries: []
+    });
     const router = useRouter();
 
     const loadStats = useCallback(async () => {
@@ -25,20 +36,22 @@ export default function StatisticsClient() {
             setLoading(true);
             setError('');
 
-            const [productsRes, combosRes, categoriesRes] = await Promise.all([
+            const [productsRes, combosRes, categoriesRes, salesRes] = await Promise.all([
                 fetch('/api/admin/products'),
                 fetch('/api/admin/combos'),
-                fetch('/api/admin/categories')
+                fetch('/api/admin/categories'),
+                fetch(`/api/admin/statistics/sales?period=${salesPeriod}`)
             ]);
 
-            if (!productsRes.ok || !combosRes.ok || !categoriesRes.ok) {
+            if (!productsRes.ok || !combosRes.ok || !categoriesRes.ok || !salesRes.ok) {
                 throw new Error('No se pudieron obtener las estadísticas');
             }
 
-            const [productsData, combosData, categoriesData] = await Promise.all([
+            const [productsData, combosData, categoriesData, salesData] = await Promise.all([
                 productsRes.json(),
                 combosRes.json(),
-                categoriesRes.json()
+                categoriesRes.json(),
+                salesRes.json()
             ]);
 
             const products = productsData.data || [];
@@ -71,17 +84,81 @@ export default function StatisticsClient() {
                 categories: categories.length,
                 topCategories
             });
+
+            setSalesStats(salesData.data || {
+                period: salesPeriod,
+                topProducts: [],
+                otherProducts: { quantity: 0, percentage: 0 },
+                totals: { unitsSold: 0, orders: 0, revenue: 0 },
+                salesSeries: []
+            });
             setLastUpdated(new Date());
         } catch (err) {
             setError(err.message || 'Error al cargar estadísticas');
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [salesPeriod]);
 
     useEffect(() => {
         loadStats();
     }, [loadStats]);
+
+    const pieData = useMemo(() => {
+        const base = (salesStats.topProducts || []).map((item) => ({
+            name: item.name,
+            quantity: item.quantity,
+            percentage: item.percentage
+        }));
+
+        if ((salesStats.otherProducts?.quantity || 0) > 0) {
+            base.push({
+                name: 'Otros',
+                quantity: salesStats.otherProducts.quantity,
+                percentage: salesStats.otherProducts.percentage
+            });
+        }
+
+        return base;
+    }, [salesStats]);
+
+    const pieBackground = useMemo(() => {
+        if (!pieData.length) return 'conic-gradient(#374151 0 100%)';
+        let current = 0;
+        const chunks = pieData.map((item, idx) => {
+            const start = current;
+            current += item.percentage;
+            const end = idx === pieData.length - 1 ? 100 : current;
+            return `${PIE_COLORS[idx % PIE_COLORS.length]} ${start}% ${end}%`;
+        });
+        return `conic-gradient(${chunks.join(', ')})`;
+    }, [pieData]);
+
+    const lineChart = useMemo(() => {
+        const data = salesStats.salesSeries || [];
+        if (!data.length) return { points: '', markers: [], labels: [] };
+
+        const width = 700;
+        const height = 240;
+        const paddingX = 24;
+        const paddingTop = 16;
+        const paddingBottom = 28;
+        const maxValue = Math.max(...data.map((d) => d.value), 1);
+        const innerWidth = width - paddingX * 2;
+        const innerHeight = height - paddingTop - paddingBottom;
+
+        const markers = data.map((item, index) => {
+            const x = paddingX + (index * innerWidth) / Math.max(data.length - 1, 1);
+            const y = paddingTop + innerHeight - (item.value / maxValue) * innerHeight;
+            return { ...item, x, y };
+        });
+
+        const points = markers.map((m) => `${m.x},${m.y}`).join(' ');
+        const labelStep = data.length > 16 ? 3 : data.length > 10 ? 2 : 1;
+        const labels = markers.filter((_, idx) => idx % labelStep === 0 || idx === markers.length - 1);
+
+        return { points, markers, labels, width, height, baseline: height - paddingBottom };
+    }, [salesStats.salesSeries]);
 
     return (
         <main className={styles.container}>
@@ -133,6 +210,94 @@ export default function StatisticsClient() {
                         <article className={styles.statCard}>
                             <span className={styles.label}>Categorías Totales</span>
                             <strong>{stats.categories}</strong>
+                        </article>
+                    </section>
+
+                    <section className={styles.chartsHeader}>
+                        <h2>Análisis de ventas</h2>
+                        <div className={styles.periodSelector}>
+                            <label htmlFor="period">Período</label>
+                            <select
+                                id="period"
+                                value={salesPeriod}
+                                onChange={(e) => setSalesPeriod(e.target.value)}
+                                className={styles.periodSelect}
+                            >
+                                <option value="week">Semana actual</option>
+                                <option value="month">Mes actual</option>
+                                <option value="quarter">Trimestre actual</option>
+                                <option value="year">Año actual</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <section className={styles.chartsGrid}>
+                        <article className={styles.chartCard}>
+                            <h3>Top 5 productos más vendidos (%)</h3>
+                            <div className={styles.pieWrap}>
+                                <div className={styles.pieChart} style={{ background: pieBackground }} />
+                                <ul className={styles.legend}>
+                                    {pieData.length > 0 ? pieData.map((item, idx) => (
+                                        <li key={item.name}>
+                                            <span style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                                            <em>{item.name}</em>
+                                            <strong>{item.percentage}%</strong>
+                                        </li>
+                                    )) : <li>Sin ventas para este período.</li>}
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article className={styles.chartCard}>
+                            <h3>Ventas por período</h3>
+                            <div className={styles.lineChartWrap}>
+                                <svg viewBox={`0 0 ${lineChart.width || 700} ${lineChart.height || 240}`} className={styles.lineChart}>
+                                    <line
+                                        x1="24"
+                                        y1={lineChart.baseline || 212}
+                                        x2={(lineChart.width || 700) - 24}
+                                        y2={lineChart.baseline || 212}
+                                        stroke="rgba(255,255,255,0.25)"
+                                    />
+                                    {lineChart.points ? (
+                                        <polyline
+                                            fill="none"
+                                            stroke="#22d3ee"
+                                            strokeWidth="3"
+                                            points={lineChart.points}
+                                        />
+                                    ) : null}
+                                    {lineChart.markers?.map((marker, idx) => (
+                                        <circle
+                                            key={`${marker.label}-${idx}`}
+                                            cx={marker.x}
+                                            cy={marker.y}
+                                            r="3.5"
+                                            fill="#f97316"
+                                        />
+                                    ))}
+                                </svg>
+                                <div className={styles.lineLabels}>
+                                    {lineChart.labels?.map((label, idx) => (
+                                        <span key={`${label.label}-${idx}`}>{label.label}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+
+                    <section className={styles.salesSummary}>
+                        <article>
+                            <span>Total vendido (monto)</span>
+                            <strong>{formatPrice(salesStats.totals?.revenue || 0)}</strong>
+                        </article>
+                        <article>
+                            <span>Pedidos en el período</span>
+                            <strong>{salesStats.totals?.orders || 0}</strong>
+                        </article>
+                        <article>
+                            <span>Unidades vendidas</span>
+                            <strong>{salesStats.totals?.unitsSold || 0}</strong>
                         </article>
                     </section>
 
