@@ -29,7 +29,7 @@
     margin: 0;
 }
 
-.menuBtn,
+.backBtn,
 .combosBtn,
 .categoriesBtn,
 .logoutBtn,
@@ -45,7 +45,7 @@
     white-space: nowrap;
 }
 
-.menuBtn {
+.backBtn {
     background-color: #6c757d !important;
 }
 
@@ -65,7 +65,7 @@
     background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
 }
 
-.menuBtn:hover,
+.backBtn:hover,
 .combosBtn:hover,
 .categoriesBtn:hover,
 .logoutBtn:hover,

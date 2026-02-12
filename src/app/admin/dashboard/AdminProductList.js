@@ -81,14 +81,15 @@ export default function AdminProductList() {
                     <p className={styles.subtitle}>Administra precios, descripciones, imágenes y disponibilidad</p>
                 </div>
                 <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
-                    <button onClick={() => router.push('/admin/dashboard')} className={`btn btn-secondary ${styles.menuBtn}`} title="Menú Principal">
-                        🧭 Menú
-                    </button>
+                   
                     <button onClick={() => router.push('/admin/combos')} className={`btn btn-secondary ${styles.combosBtn}`} title="Gestionar Combos">
                         🍱 Combos
                     </button>
                     <button onClick={() => router.push('/admin/categories')} className={`btn btn-secondary ${styles.categoriesBtn}`} title="Gestionar Categorías">
                         🗂️ Categorías
+                    </button> 
+                    <button onClick={() => router.push('/admin/dashboard')} className={`btn btn-secondary ${styles.backBtn}`} title="Volver al menú principal">
+                        ← Volver
                     </button>
                 </div>
             </div>
