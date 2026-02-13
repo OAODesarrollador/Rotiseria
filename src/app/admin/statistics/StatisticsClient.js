@@ -5,7 +5,18 @@ import { useRouter } from 'next/navigation';
 import { formatPrice } from '@/lib/utils';
 import styles from './statistics.module.css';
 
-const PIE_COLORS = ['#ef4444', '#f97316', '#14b8a6', '#3b82f6', '#a855f7', '#6b7280'];
+const PAYMENT_COLORS = ['#22c55e', '#0ea5e9', '#f59e0b', '#ef4444', '#8b5cf6', '#6b7280'];
+
+const formatPaymentMethod = (method) => {
+    const map = {
+        efectivo: 'Efectivo',
+        transferencia: 'Transferencia',
+        mercadopago: 'Tarjeta (MP)',
+        mercadopago_app: 'Mercado Pago App',
+        desconocido: 'Desconocido'
+    };
+    return map[method] || method;
+};
 
 export default function StatisticsClient() {
     const [loading, setLoading] = useState(true);
@@ -27,7 +38,8 @@ export default function StatisticsClient() {
         topProducts: [],
         otherProducts: { quantity: 0, percentage: 0 },
         totals: { unitsSold: 0, orders: 0, revenue: 0 },
-        salesSeries: []
+        salesSeries: [],
+        paymentMethods: []
     });
     const router = useRouter();
 
@@ -90,7 +102,8 @@ export default function StatisticsClient() {
                 topProducts: [],
                 otherProducts: { quantity: 0, percentage: 0 },
                 totals: { unitsSold: 0, orders: 0, revenue: 0 },
-                salesSeries: []
+                salesSeries: [],
+                paymentMethods: []
             });
             setLastUpdated(new Date());
         } catch (err) {
@@ -104,35 +117,25 @@ export default function StatisticsClient() {
         loadStats();
     }, [loadStats]);
 
-    const pieData = useMemo(() => {
-        const base = (salesStats.topProducts || []).map((item) => ({
-            name: item.name,
-            quantity: item.quantity,
-            percentage: item.percentage
-        }));
+    const topProducts = useMemo(() => salesStats.topProducts || [], [salesStats.topProducts]);
+    const topProductsMaxQty = useMemo(() => Math.max(...topProducts.map((item) => item.quantity), 1), [topProducts]);
 
-        if ((salesStats.otherProducts?.quantity || 0) > 0) {
-            base.push({
-                name: 'Otros',
-                quantity: salesStats.otherProducts.quantity,
-                percentage: salesStats.otherProducts.percentage
-            });
-        }
+    const paymentPieData = useMemo(() => (salesStats.paymentMethods || []).map((item) => ({
+        ...item,
+        label: formatPaymentMethod(item.method)
+    })), [salesStats.paymentMethods]);
 
-        return base;
-    }, [salesStats]);
-
-    const pieBackground = useMemo(() => {
-        if (!pieData.length) return 'conic-gradient(#374151 0 100%)';
+    const paymentPieBackground = useMemo(() => {
+        if (!paymentPieData.length) return 'conic-gradient(#374151 0 100%)';
         let current = 0;
-        const chunks = pieData.map((item, idx) => {
+        const chunks = paymentPieData.map((item, idx) => {
             const start = current;
             current += item.percentage;
-            const end = idx === pieData.length - 1 ? 100 : current;
-            return `${PIE_COLORS[idx % PIE_COLORS.length]} ${start}% ${end}%`;
+            const end = idx === paymentPieData.length - 1 ? 100 : current;
+            return `${PAYMENT_COLORS[idx % PAYMENT_COLORS.length]} ${start}% ${end}%`;
         });
         return `conic-gradient(${chunks.join(', ')})`;
-    }, [pieData]);
+    }, [paymentPieData]);
 
     const lineChart = useMemo(() => {
         const data = salesStats.salesSeries || [];
@@ -233,14 +236,34 @@ export default function StatisticsClient() {
 
                     <section className={styles.chartsGrid}>
                         <article className={styles.chartCard}>
-                            <h3>Top 5 productos más vendidos (%)</h3>
-                            <div className={styles.pieWrap}>
-                                <div className={styles.pieChart} style={{ background: pieBackground }} />
-                                <ul className={styles.legend}>
-                                    {pieData.length > 0 ? pieData.map((item, idx) => (
-                                        <li key={item.name}>
-                                            <span style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                            <h3>Top 5 productos más vendidos</h3>
+                            <div className={styles.barChart}>
+                                {topProducts.length > 0 ? topProducts.map((item) => (
+                                    <div key={item.name} className={styles.barRow}>
+                                        <div className={styles.barLabelRow}>
                                             <em>{item.name}</em>
+                                            <strong>{item.quantity} u. ({item.percentage}%)</strong>
+                                        </div>
+                                        <div className={styles.barTrack}>
+                                            <div
+                                                className={styles.barFill}
+                                                style={{ width: `${(item.quantity / topProductsMaxQty) * 100}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )) : <p>Sin ventas para este período.</p>}
+                            </div>
+                        </article>
+
+                        <article className={styles.chartCard}>
+                            <h3>Ventas por método de pago (%)</h3>
+                            <div className={styles.pieWrap}>
+                                <div className={styles.pieChart} style={{ background: paymentPieBackground }} />
+                                <ul className={styles.legend}>
+                                    {paymentPieData.length > 0 ? paymentPieData.map((item, idx) => (
+                                        <li key={item.method}>
+                                            <span style={{ backgroundColor: PAYMENT_COLORS[idx % PAYMENT_COLORS.length] }} />
+                                            <em>{item.label}</em>
                                             <strong>{item.percentage}%</strong>
                                         </li>
                                     )) : <li>Sin ventas para este período.</li>}

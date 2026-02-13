@@ -333,13 +333,24 @@
 }
 
 .copyButton {
-    border: 1px solid var(--surface-highlight);
-    background: transparent;
-    color: var(--text);
-    padding: 8px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #6c757d;
+    color: #fff;
+    padding: 8px;
+    min-width: 38px;
+    min-height: 38px;
     border-radius: 8px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copyButton:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
 }
 
 .copyButton:disabled {
@@ -358,46 +369,6 @@
     flex: 1;
 }
 
-.transferProof {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.fileInput {
-    border: 1px dashed var(--surface-highlight);
-    padding: 12px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.proofPreview {
-    display: grid;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    border-radius: 12px;
-    border: 1px solid var(--surface-highlight);
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.proofPreview img {
-    width: 100%;
-    border-radius: 10px;
-    object-fit: cover;
-}
-
-.proofActions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.proofName {
-    font-size: 0.9rem;
-    opacity: 0.85;
-}
-
 .transferToast {
     align-self: flex-end;
     padding: 10px 14px;
@@ -413,8 +384,7 @@
 
 .copyButton:focus-visible,
 .transferActionBtn:focus-visible,
-.transferSecondaryBtn:focus-visible,
-.fileInput:focus-visible {
+.transferSecondaryBtn:focus-visible {
     outline: 3px solid rgba(243, 156, 18, 0.6);
     outline-offset: 2px;
 }
@@ -454,8 +424,30 @@
     }
 
     .transferValueRow {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .transferValue {
+        flex: 1;
+        min-width: 0;
+        word-break: break-word;
+    }
+
+    .copyButton {
+        margin-left: auto;
+    }
+
+    .transferActions {
+        justify-content: flex-end;
+    }
+
+    .transferActionBtn,
+    .transferSecondaryBtn {
+        flex: 0 0 auto;
+        min-width: 150px;
     }
 
     .modalContent {

@@ -80,7 +80,7 @@ export default function AdminProductList() {
                     <h1>📦 Gestión de Productos</h1>
                     <p className={styles.subtitle}>Administra precios, descripciones, imágenes y disponibilidad</p>
                 </div>
-                <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
+                <div className={styles.headerActions}>
                    
                     <button onClick={() => router.push('/admin/combos')} className={`btn btn-secondary ${styles.combosBtn}`} title="Gestionar Combos">
                         🍱 Combos

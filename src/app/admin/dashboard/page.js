@@ -29,6 +29,12 @@ const options = [
         title: 'Estadísticas',
         description: 'Ver métricas rápidas de productos, combos y categorías.',
         icon: '📊'
+    },
+    {
+        href: '/admin/orders',
+        title: 'Pedidos',
+        description: 'Visualizar pedidos del día actual y del día anterior.',
+        icon: '🧾'
     }
 ];
 

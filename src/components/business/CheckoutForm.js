@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
+import { Copy } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { generateWhatsAppMessage, openWhatsApp } from '@/lib/whatsapp';
 import { formatPrice } from '@/lib/utils';
@@ -50,7 +51,6 @@ export default function CheckoutForm({ whatsappNumber }) {
     const [mpOrderData, setMpOrderData] = useState(null);
     const [transferOrder, setTransferOrder] = useState(null);
     const [transferStatus, setTransferStatus] = useState(null);
-    const [transferProof, setTransferProof] = useState(null);
     const [transferToast, setTransferToast] = useState(null);
     const [whatsappPreviewOpen, setWhatsappPreviewOpen] = useState(false);
     const [whatsappPreviewMessage, setWhatsappPreviewMessage] = useState('');
@@ -89,7 +89,6 @@ export default function CheckoutForm({ whatsappNumber }) {
     const clearTransferState = () => {
         setTransferOrder(null);
         setTransferStatus(null);
-        setTransferProof(null);
         setTransferToast(null);
         try {
             localStorage.removeItem(TRANSFER_STORAGE_KEY);
@@ -109,7 +108,7 @@ export default function CheckoutForm({ whatsappNumber }) {
         }
 
         const orderId = createOrderId();
-        const initialStatus = formData.payment === 'mercadopago'
+        const initialStatus = (formData.payment === 'mercadopago' || formData.payment === 'mercadopago_app')
             ? 'pendiente_pago'
             : formData.payment === 'transferencia'
                 ? TRANSFER_STATUS_PENDING
@@ -149,11 +148,28 @@ export default function CheckoutForm({ whatsappNumber }) {
                 return;
             }
 
+            if (formData.payment === 'mercadopago_app') {
+                const prefRes = await fetch('/api/payments/mp/preference', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderId })
+                });
+
+                const prefData = await prefRes.json().catch(() => ({}));
+                if (!prefRes.ok || !prefData?.init_point) {
+                    throw new Error(prefData?.error || 'No se pudo iniciar Mercado Pago');
+                }
+
+                setStatus('idle');
+                window.location.assign(prefData.init_point);
+                return;
+            }
+
             if (formData.payment === 'transferencia') {
                 setTransferOrder(order);
                 setTransferStatus(TRANSFER_STATUS_PENDING);
                 setStatus('idle');
-                persistTransferState({ order, status: TRANSFER_STATUS_PENDING, proof: null });
+                persistTransferState({ order, status: TRANSFER_STATUS_PENDING });
                 return;
             }
 
@@ -330,7 +346,6 @@ export default function CheckoutForm({ whatsappNumber }) {
             if (saved?.order?.payment?.method === 'transferencia' && saved?.status) {
                 setTransferOrder(saved.order);
                 setTransferStatus(saved.status);
-                setTransferProof(saved.proof || null);
                 setStatus('idle');
             }
         } catch (error) {
@@ -340,8 +355,8 @@ export default function CheckoutForm({ whatsappNumber }) {
 
     useEffect(() => {
         if (!transferOrder) return;
-        persistTransferState({ order: transferOrder, status: transferStatus, proof: transferProof });
-    }, [transferOrder, transferStatus, transferProof]);
+        persistTransferState({ order: transferOrder, status: transferStatus });
+    }, [transferOrder, transferStatus]);
 
     const handleCopy = async (value, label) => {
         const textValue = String(value ?? '');
@@ -354,7 +369,12 @@ export default function CheckoutForm({ whatsappNumber }) {
             textarea.value = textValue;
             textarea.style.position = 'fixed';
             textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
+            const mountTarget = document.body || document.documentElement;
+            if (!mountTarget) {
+                showTransferToast('No se pudo copiar');
+                return;
+            }
+            mountTarget.appendChild(textarea);
             textarea.focus();
             textarea.select();
             try {
@@ -363,7 +383,9 @@ export default function CheckoutForm({ whatsappNumber }) {
             } catch {
                 showTransferToast('No se pudo copiar');
             } finally {
-                document.body.removeChild(textarea);
+                if (textarea.parentNode) {
+                    textarea.parentNode.removeChild(textarea);
+                }
             }
         }
     };
@@ -391,31 +413,6 @@ export default function CheckoutForm({ whatsappNumber }) {
         } catch {
             // backend optional; keep local state
         }
-    };
-
-    const handleProofChange = (event) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-        if (!file.type.startsWith('image/')) {
-            showTransferToast('Solo se permiten imágenes');
-            return;
-        }
-        if (file.size > 3 * 1024 * 1024) {
-            showTransferToast('El archivo supera 3MB');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            setTransferProof({ name: file.name, dataUrl: reader.result });
-            showTransferToast('Comprobante cargado');
-        };
-        reader.readAsDataURL(file);
-    };
-
-    const handleRemoveProof = () => {
-        setTransferProof(null);
-        showTransferToast('Comprobante eliminado');
     };
 
     const renderStatusModal = ({ title, message, variant, orderId, paymentId, detail, onClose, closeLabel = 'Cerrar', extraActions = null, extraContent = null }) => {
@@ -583,7 +580,7 @@ export default function CheckoutForm({ whatsappNumber }) {
                     type="button"
                     className={`btn btn-primary ${styles.whatsappBtn} ${styles.whatsappModalBtn}`}
                     onClick={() => {
-                        openWhatsApp(whatsappNumber || '5491112345678', mpMessage);
+                        openWhatsApp(whatsappNumber || '+543704054127', mpMessage);
                         window.location.assign('/');
                     }}
                 >
@@ -736,7 +733,7 @@ export default function CheckoutForm({ whatsappNumber }) {
                                     onClick={() => handleCopy(MP_TRANSFER_CONFIG.MP_ALIAS, 'Alias')}
                                     aria-label="Copiar alias"
                                 >
-                                    Copiar alias
+                                    <Copy size={16} />
                                 </button>
                             </div>
                         </div>
@@ -750,7 +747,7 @@ export default function CheckoutForm({ whatsappNumber }) {
                                     onClick={() => handleCopy(MP_TRANSFER_CONFIG.MP_CVU, 'CVU')}
                                     aria-label="Copiar CVU"
                                 >
-                                    Copiar CVU
+                                    <Copy size={16} />
                                 </button>
                             </div>
                         </div>
@@ -764,7 +761,7 @@ export default function CheckoutForm({ whatsappNumber }) {
                                     onClick={() => handleCopy(MP_TRANSFER_CONFIG.MP_TITULAR, 'Titular')}
                                     aria-label="Copiar titular"
                                 >
-                                    Copiar titular
+                                    <Copy size={16} />
                                 </button>
                             </div>
                         </div>
@@ -779,7 +776,7 @@ export default function CheckoutForm({ whatsappNumber }) {
                                         onClick={() => handleCopy(MP_TRANSFER_CONFIG.MP_BANK_NAME, 'Banco')}
                                         aria-label="Copiar banco"
                                     >
-                                        Copiar banco
+                                        <Copy size={16} />
                                     </button>
                                 </div>
                             </div>
@@ -795,7 +792,7 @@ export default function CheckoutForm({ whatsappNumber }) {
                                     aria-label="Copiar monto"
                                     disabled={!isTotalValid}
                                 >
-                                    Copiar monto
+                                    <Copy size={16} />
                                 </button>
                             </div>
                         </div>
@@ -809,7 +806,7 @@ export default function CheckoutForm({ whatsappNumber }) {
                                     onClick={() => handleCopy(referenceText, 'Referencia')}
                                     aria-label="Copiar referencia"
                                 >
-                                    Copiar referencia
+                                    <Copy size={16} />
                                 </button>
                             </div>
                         </div>
@@ -833,36 +830,6 @@ export default function CheckoutForm({ whatsappNumber }) {
                         >
                             Cambiar método
                         </button>
-                    </div>
-
-                    <div className={styles.transferProof}>
-                        <label className={styles.transferLabel} htmlFor="transfer-proof">
-                            Subir comprobante (opcional)
-                        </label>
-                        <input
-                            id="transfer-proof"
-                            className={styles.fileInput}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleProofChange}
-                            aria-label="Subir comprobante de transferencia"
-                        />
-                        {transferProof?.dataUrl && (
-                            <div className={styles.proofPreview}>
-                                <img src={transferProof.dataUrl} alt="Comprobante de transferencia" />
-                                <div className={styles.proofActions}>
-                                    <span className={styles.proofName}>{transferProof.name}</span>
-                                    <button
-                                        type="button"
-                                        className={styles.copyButton}
-                                        onClick={handleRemoveProof}
-                                        aria-label="Quitar comprobante"
-                                    >
-                                        Quitar
-                                    </button>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     {transferToast && (
@@ -957,7 +924,8 @@ export default function CheckoutForm({ whatsappNumber }) {
                         <select name="payment" className={styles.select} value={formData.payment} onChange={handleChange}>
                             <option value="efectivo">Efectivo</option>
                             <option value="transferencia">Transferencia</option>
-                            <option value="mercadopago">Mercado Pago</option>
+                            <option value="mercadopago">Tarjeta de Crédito/Débito</option>
+                            <option value="mercadopago_app">Mercado Pago</option>
                         </select>
                     </div>
 

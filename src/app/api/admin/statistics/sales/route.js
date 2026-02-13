@@ -177,6 +177,23 @@ export async function GET(req) {
             value: byKey[bucket.key] || 0
         }));
 
+        const totalsByPayment = {};
+        let totalRevenue = 0;
+        for (const order of ordersInRange) {
+            const method = order.paymentMethod || 'desconocido';
+            const amount = Number(order.total) || 0;
+            totalsByPayment[method] = (totalsByPayment[method] || 0) + amount;
+            totalRevenue += amount;
+        }
+
+        const paymentMethods = Object.entries(totalsByPayment)
+            .map(([method, amount]) => ({
+                method,
+                amount,
+                percentage: totalRevenue > 0 ? Number(((amount / totalRevenue) * 100).toFixed(1)) : 0
+            }))
+            .sort((a, b) => b.amount - a.amount);
+
         return NextResponse.json({
             success: true,
             data: {
@@ -193,9 +210,10 @@ export async function GET(req) {
                 totals: {
                     unitsSold: totalUnits,
                     orders: ordersInRange.length,
-                    revenue: ordersInRange.reduce((sum, order) => sum + (Number(order.total) || 0), 0)
+                    revenue: totalRevenue
                 },
-                salesSeries
+                salesSeries,
+                paymentMethods
             }
         });
     } catch (error) {
@@ -203,4 +221,3 @@ export async function GET(req) {
         return NextResponse.json({ error: 'Failed to fetch statistics' }, { status: 500 });
     }
 }
-
