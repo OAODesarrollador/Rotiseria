@@ -71,10 +71,24 @@
     color: #fee2e2;
 }
 
-.filters {
+.filtersRow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.primaryFilters {
     display: flex;
     gap: 0.6rem;
-    margin-bottom: 0.9rem;
+}
+
+.deliveryFilters {
+    display: flex;
+    gap: 0.6rem;
+    margin-left: auto;
+    justify-content: flex-end;
 }
 
 .filterBtn {
@@ -94,7 +108,7 @@
 .tableWrapper {
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
-    overflow-x: auto;
+    overflow-x: hidden;
     background: #171717;
 }
 
@@ -194,8 +208,68 @@
 }
 
 @media (max-width: 900px) {
+    .table thead {
+        display: none;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
     .table {
-        min-width: 980px;
+        min-width: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table tr {
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 12px;
+        margin: 0.55rem 0.45rem;
+        padding: 0.45rem 0.35rem;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02));
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+    }
+
+    .table tr:nth-child(even) {
+        border-color: rgba(59, 130, 246, 0.28);
+    }
+
+    .table td {
+        border-bottom: none;
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 0.55rem;
+        padding: 0.5rem 0.65rem;
+        align-items: flex-start;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        color: #93c5fd;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    .deliveryCheckboxWrap {
+        justify-content: flex-start;
+    }
+
+    .table td + td {
+        border-top: 1px dashed rgba(148, 163, 184, 0.22);
+    }
+
+    .empty {
+        display: block !important;
+        text-align: center !important;
     }
 }
 
@@ -213,5 +287,19 @@
     .refreshBtn,
     .backBtn {
         width: 100%;
+    }
+
+    .primaryFilters,
+    .deliveryFilters {
+        width: 100%;
+    }
+
+    .deliveryFilters {
+        justify-content: flex-end;
+    }
+
+    .table td {
+        grid-template-columns: 100px 1fr;
+        padding: 0.45rem 0.55rem;
     }
 }

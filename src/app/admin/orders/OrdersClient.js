@@ -16,7 +16,7 @@ export default function OrdersClient() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [range, setRange] = useState('today');
+    const [filter, setFilter] = useState('today');
     const [savingId, setSavingId] = useState('');
     const router = useRouter();
 
@@ -42,10 +42,14 @@ export default function OrdersClient() {
     }, [loadOrders]);
 
     const filteredOrders = useMemo(() => {
-        if (range === 'today') return orders.filter((order) => order.day === 'today');
-        if (range === 'yesterday') return orders.filter((order) => order.day === 'yesterday');
-        return orders.filter((order) => order.day === 'today' || order.day === 'yesterday');
-    }, [orders, range]);
+        const recent = orders.filter((order) => order.day === 'today' || order.day === 'yesterday');
+
+        if (filter === 'today') return recent.filter((order) => order.day === 'today');
+        if (filter === 'yesterday') return recent.filter((order) => order.day === 'yesterday');
+        if (filter === 'delivered') return recent.filter((order) => order.deliveryStatus === 'ENTREGADO');
+        if (filter === 'not_delivered') return recent.filter((order) => order.deliveryStatus === 'NO_ENTREGADO');
+        return recent; // all: hoy + ayer, entregados y no entregados
+    }, [orders, filter]);
 
     const setDeliveryStatus = async (orderId, deliveryStatus) => {
         try {
@@ -92,25 +96,41 @@ export default function OrdersClient() {
 
             {!loading && !error ? (
                 <>
-                    <div className={styles.filters}>
-                        <button
-                            className={`${styles.filterBtn} ${range === 'today' ? styles.active : ''}`}
-                            onClick={() => setRange('today')}
-                        >
-                            Hoy
-                        </button>
-                        <button
-                            className={`${styles.filterBtn} ${range === 'yesterday' ? styles.active : ''}`}
-                            onClick={() => setRange('yesterday')}
-                        >
-                            Ayer
-                        </button>
-                        <button
-                            className={`${styles.filterBtn} ${range === 'all' ? styles.active : ''}`}
-                            onClick={() => setRange('all')}
-                        >
-                            Todos
-                        </button>
+                    <div className={styles.filtersRow}>
+                        <div className={styles.primaryFilters}>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'today' ? styles.active : ''}`}
+                                onClick={() => setFilter('today')}
+                            >
+                                Hoy
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'yesterday' ? styles.active : ''}`}
+                                onClick={() => setFilter('yesterday')}
+                            >
+                                Ayer
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'all' ? styles.active : ''}`}
+                                onClick={() => setFilter('all')}
+                            >
+                                Todos
+                            </button>
+                        </div>
+                        <div className={styles.deliveryFilters}>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'delivered' ? styles.active : ''}`}
+                                onClick={() => setFilter('delivered')}
+                            >
+                                Entregados
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'not_delivered' ? styles.active : ''}`}
+                                onClick={() => setFilter('not_delivered')}
+                            >
+                                No entregados
+                            </button>
+                        </div>
                     </div>
 
                     <div className={styles.tableWrapper}>
@@ -131,19 +151,19 @@ export default function OrdersClient() {
                             <tbody>
                                 {filteredOrders.length > 0 ? filteredOrders.map((order) => (
                                     <tr key={order.id}>
-                                        <td>{new Date(order.date).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
-                                        <td>#{order.id.slice(0, 8)}</td>
-                                        <td>
+                                        <td data-label="Fecha">{new Date(order.date).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+                                        <td data-label="ID">#{order.id.slice(0, 8)}</td>
+                                        <td data-label="Cliente">
                                             <div>{order.customerName}</div>
                                             <small>{order.customerPhone}</small>
                                         </td>
-                                        <td>
+                                        <td data-label="Entrega">
                                             {order.deliveryMethod === 'envio' ? 'Envío' : 'Retiro'}
                                             {order.deliveryAddress ? <small>{order.deliveryAddress}</small> : null}
                                         </td>
-                                        <td>{PAYMENT_MAP[order.paymentMethod] || order.paymentMethod}</td>
-                                        <td>{formatPrice(order.total || 0)}</td>
-                                        <td>
+                                        <td data-label="Pago">{PAYMENT_MAP[order.paymentMethod] || order.paymentMethod}</td>
+                                        <td data-label="Total">{formatPrice(order.total || 0)}</td>
+                                        <td data-label="Estado">
                                             <div className={styles.statusStack}>
                                                 <span className={`${styles.status} ${styles.paymentStatus}`}>
                                                     Pago: {order.status || 'Pendiente'}
@@ -153,7 +173,7 @@ export default function OrdersClient() {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td data-label="Entregado">
                                             <label className={styles.deliveryCheckboxWrap}>
                                                 <input
                                                     type="checkbox"
@@ -165,14 +185,14 @@ export default function OrdersClient() {
                                                 />
                                             </label>
                                         </td>
-                                        <td>
+                                        <td data-label="Detalle">
                                             <small>{order.itemsDisplay || '-'}</small>
                                             {order.comments ? <small>Obs: {order.comments}</small> : null}
                                         </td>
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan="8" className={styles.empty}>Sin pedidos para este filtro.</td>
+                                        <td colSpan="9" className={styles.empty}>Sin pedidos para este filtro.</td>
                                     </tr>
                                 )}
                             </tbody>
