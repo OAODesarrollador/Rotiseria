@@ -50,9 +50,47 @@ next-env.d.ts
 local.db
 **/local.db
 local_dump*.sql
+*.db
+*.sqlite
+*.sqlite3
+
+# local virtual environments
+.venv/
+venv/
 
 # logs
 *.log
+
+# repository-only operational files are kept; ignore local docs and one-off notes
+*.md
+!README.md
+
+# local/admin guides and generated reference files
+ADMIN_ACCESS_GUIDE.md
+DATABASE_UPDATE_MODULES.md
+IMPLEMENTATION_COMPLETE.md
+SECURITY.md
+SETUP_GUIDE.md
+EJEMPLO_PLANILLA.txt
+page-content.html
+
+# one-off migration, dump, test and inspection scripts at repo root
+/*.sql
+/*.py
+/*migration*.js
+/*turso*.mjs
+/apply-local-sql-to-turso.mjs
+/check-turso-counts.mjs
+/check-turso.mjs
+/export_localdb_to_sql.py
+/local-to-turso.mjs
+/migrate-data.mjs
+/read-local-db.py
+/test-migration.js
+/test-turso.mjs
+
+# nested local artifacts/copies
+/la-parrilla-app/
 
 # binary installers and docs (not needed for Vercel)
 PracticaProfesional/*.apk
