@@ -1,12 +1,69 @@
 .footer {
-    background-color: var(--surface);
-    color: white;
-    padding: 40px 20px 20px;
-    border-top: 5px solid var(--primary);
-    margin-top: 60px;
+    position: relative;
+    background-color: var(--warm);
+    color: var(--ink);
+    padding: 70px 20px 20px;
+    border-top: 0;
+    margin-top: 0;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: "LA PARRILLA LA PARRILLA";
+    position: absolute;
+    left: -20px;
+    top: 8px;
+    color: rgba(23, 18, 14, 0.12);
+    font-family: var(--font-title);
+    font-size: clamp(3.5rem, 11vw, 8rem);
+    font-weight: 950;
+    line-height: 0.8;
+    white-space: nowrap;
+}
+
+.jumpBits {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.jumpBits img {
+    position: absolute;
+    bottom: -140px;
+    width: clamp(88px, 12vw, 160px);
+    height: auto;
+    aspect-ratio: auto;
+    object-fit: contain;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    filter: drop-shadow(0 22px 18px rgba(0, 0, 0, 0.28));
+    animation: footerJump var(--jump-duration, 2.7s) ease-in-out var(--jump-delay, 0s) infinite;
+}
+
+@keyframes footerJump {
+    0%,
+    100% {
+        opacity: 0;
+        transform: translateY(0px) rotate(calc(var(--jump-rotation, -8deg) * -0.7));
+    }
+
+    12%,
+    82% {
+        opacity: 1;
+    }
+
+    44% {
+        opacity: 1;
+        transform: translateY(-520px) rotate(var(--jump-rotation, 9deg));
+    }
 }
 
 .container {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -29,7 +86,7 @@
 }
 
 .text {
-    color: var(--text-muted);
+    color: rgba(23, 18, 14, 0.74);
     margin-bottom: 10px;
     line-height: 1.6;
 }
@@ -39,7 +96,7 @@
     height: 250px;
     border-radius: var(--radius);
     overflow: hidden;
-    border: 1px solid var(--surface-highlight);
+    border: 2px solid rgba(23, 18, 14, 0.3);
 }
 
 .map {
@@ -49,11 +106,13 @@
 }
 
 .copyright {
+    position: relative;
+    z-index: 2;
     text-align: center;
     margin-top: 40px;
     padding-top: 20px;
-    border-top: 1px solid var(--surface-highlight);
-    color: #666;
+    border-top: 1px solid rgba(23, 18, 14, 0.26);
+    color: rgba(23, 18, 14, 0.58);
     font-size: 0.9rem;
 }
 
@@ -79,4 +138,9 @@
     .mapContainer {
         height: 200px;
     }
+
+    .jumpBits img {
+        width: 82px;
+    }
+
 }

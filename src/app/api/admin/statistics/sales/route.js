@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { orders, orderItems } from '@/lib/db/schema';
-
-function isAuthenticated() {
-    const cookieStore = cookies();
-    return !!cookieStore.get('admin_token');
-}
+import { isAdminAuthenticated } from '@/lib/auth/adminAuth';
 
 function startOfDay(date) {
     const d = new Date(date);
@@ -117,7 +112,7 @@ function buildBuckets(start, end, period) {
 }
 
 export async function GET(req) {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

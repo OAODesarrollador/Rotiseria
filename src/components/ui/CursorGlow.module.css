@@ -1,0 +1,52 @@
+.cursor,
+.trail {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 500;
+    pointer-events: none;
+    border-radius: 50%;
+}
+
+.cursor {
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 248, 229, 0.78);
+    mix-blend-mode: difference;
+    transform: translate3d(-120px, -120px, 0);
+    transition: width 0.18s ease, height 0.18s ease, margin 0.18s ease, background 0.18s ease;
+}
+
+.trail {
+    width: 18px;
+    height: 18px;
+    margin-left: 8px;
+    margin-top: 8px;
+    background: rgba(228, 63, 37, var(--alpha));
+    box-shadow: 0 0 26px rgba(244, 167, 44, var(--alpha));
+    z-index: 499;
+}
+
+.cursor::after {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    background: var(--warm);
+    box-shadow: 0 0 28px rgba(246, 166, 35, 0.7);
+}
+
+.active {
+    width: 58px;
+    height: 58px;
+    margin-left: -12px;
+    margin-top: -12px;
+    background: rgba(255, 248, 229, 0.08);
+}
+
+@media (hover: none), (pointer: coarse) {
+    .cursor,
+    .trail {
+        display: none;
+    }
+}

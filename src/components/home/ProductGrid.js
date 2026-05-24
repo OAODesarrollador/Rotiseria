@@ -9,27 +9,51 @@ export default function ProductGrid({ items, isCombo, showFilters }) {
     const categories = ['Todos', ...new Set(items.map(i => i.categoria).filter(Boolean))];
 
     const visible = filter === 'Todos' ? items : items.filter(i => i.categoria === filter);
+    const sections = filter === 'Todos' && categories.length > 1
+        ? categories
+            .filter(c => c !== 'Todos')
+            .map(category => ({
+                category,
+                items: items.filter(i => i.categoria === category)
+            }))
+            .filter(section => section.items.length > 0)
+        : [{ category: filter === 'Todos' ? 'Todos los platos' : filter, items: visible }];
 
     return (
-        <div>
+        <div className={styles.catalog}>
             {showFilters && (
-                <div className={styles.filters}>
+                <div className={styles.filters} aria-label="Filtrar por categoria">
                     {categories.map(c => (
                         <button
                             key={c}
+                            type="button"
                             onClick={() => setFilter(c)}
-                            className={`btn ${filter === c ? 'btn-primary' : 'btn-secondary'} ${filter === c ? styles.activeFilter : styles.filter}`}
+                            className={`${styles.filter} ${filter === c ? styles.activeFilter : ''}`}
+                            aria-pressed={filter === c}
                         >
                             {c}
                         </button>
                     ))}
                 </div>
             )}
-            <div className={styles.grid}>
-                {visible.map(item => (
-                    <ProductCard key={item.id} item={item} isCombo={isCombo} />
-                ))}
-            </div>
+            {sections.map(section => (
+                <section key={section.category} className={styles.categoryBlock}>
+                    {section.category !== 'Todos los platos' && (
+                        <div className={styles.categoryHeader}>
+                            <div>
+                                <span className={styles.sectionLabel}>Especialidad</span>
+                                <h3>{section.category}</h3>
+                            </div>
+                            <span>{section.items.length} opciones</span>
+                        </div>
+                    )}
+                    <div className={styles.grid}>
+                        {section.items.map((item, index) => (
+                            <ProductCard key={item.id} item={item} isCombo={isCombo} index={index} />
+                        ))}
+                    </div>
+                </section>
+            ))}
         </div>
     );
 }

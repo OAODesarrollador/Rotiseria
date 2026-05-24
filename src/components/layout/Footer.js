@@ -1,8 +1,59 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import styles from './Footer.module.css';
 
+const footerBits = [
+    '/images/Carne.png',
+    '/images/PanAbajo.png',
+    '/images/tomate.png',
+    '/images/queso.png',
+    '/images/lechuga.png',
+    '/images/huevo.png',
+    '/images/PanArriba.png',
+];
+
+const pickJumpingBits = () => {
+    const shuffled = [...footerBits].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3).map((src, index) => ({
+        id: `${src}-${Date.now()}-${index}`,
+        src,
+        left: 8 + Math.random() * 78,
+        delay: index * 0.18,
+        duration: 2.45 + Math.random() * 0.5,
+        rotation: -12 + Math.random() * 24,
+    }));
+};
+
 export default function Footer() {
+    const [jumpingBits, setJumpingBits] = useState([]);
+
+    useEffect(() => {
+        setJumpingBits(pickJumpingBits());
+        const interval = setInterval(() => {
+            setJumpingBits(pickJumpingBits());
+        }, 2800);
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <footer className={styles.footer}>
+            <div className={styles.jumpBits} aria-hidden="true">
+                {jumpingBits.map(bit => (
+                    <img
+                        key={bit.id}
+                        src={bit.src}
+                        alt=""
+                        style={{
+                            left: `${bit.left}%`,
+                            '--jump-delay': `${bit.delay}s`,
+                            '--jump-duration': `${bit.duration}s`,
+                            '--jump-rotation': `${bit.rotation}deg`,
+                        }}
+                    />
+                ))}
+            </div>
             <div className={styles.container}>
 
                 <div className={styles.column}>

@@ -2,15 +2,10 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { products } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { cookies } from 'next/headers';
-
-function checkAuth() {
-  const cookieStore = cookies();
-  return !!cookieStore.get('admin_token');
-}
+import { isAdminAuthenticated } from '@/lib/auth/adminAuth';
 
 export async function GET(req) {
-  if (!checkAuth()) {
+  if (!isAdminAuthenticated()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -28,7 +23,7 @@ export async function GET(req) {
 }
 
 export async function PATCH(req) {
-  if (!checkAuth()) {
+  if (!isAdminAuthenticated()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -49,7 +44,7 @@ export async function PATCH(req) {
 }
 
 export async function DELETE(req) {
-  if (!checkAuth()) {
+  if (!isAdminAuthenticated()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

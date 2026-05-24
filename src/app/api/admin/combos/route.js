@@ -1,18 +1,13 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { fetchAllCombos, createCombo, updateCombo, deleteCombo } from '@/lib/catalog';
-
-function isAuthenticated() {
-    const cookieStore = cookies();
-    return !!cookieStore.get('admin_token');
-}
+import { isAdminAuthenticated } from '@/lib/auth/adminAuth';
 
 /**
  * GET /api/admin/combos
  * Retorna lista de combos
  */
 export async function GET() {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -30,7 +25,7 @@ export async function GET() {
  * Crear nuevo combo
  */
 export async function POST(req) {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -52,7 +47,7 @@ export async function POST(req) {
  * Actualizar combo existente
  */
 export async function PATCH(req) {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -80,7 +75,7 @@ export async function PATCH(req) {
  * Eliminar combo
  */
 export async function DELETE(req) {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

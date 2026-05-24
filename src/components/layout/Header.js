@@ -12,15 +12,18 @@ export default function Header() {
         <header className={styles.header}>
             <div className={`container ${styles.inner}`}>
                 <Link href="/" className={styles.logo}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <img src="/images/Logo2.jpg" alt="La Parrilla" style={{ height: '50px', borderRadius: '50%' }} />
-                        <span>La Parrilla</span>
-                    </div>
+                    <img src="/images/Logo2.jpg" alt="La Parrilla" />
+                    <span>La Parrilla</span>
                 </Link>
+                <nav className={styles.nav} aria-label="Principal">
+                    <a href="#productos">Menu</a>
+                    <Link href="/checkout">Carrito</Link>
+                </nav>
                 <button
-                    className={`btn btn-ghost ${styles.cartBtn}`}
+                    className={styles.cartBtn}
                     onClick={() => setIsOpen(true)}
                     aria-label="Abrir carrito"
+                    type="button"
                 >
                     <ShoppingCart size={24} />
                     {count > 0 && <span className={styles.badge}>{count}</span>}

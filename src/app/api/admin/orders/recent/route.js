@@ -1,15 +1,10 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { orders } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { isAdminAuthenticated } from '@/lib/auth/adminAuth';
 
 const DELIVERY_MARKER_REGEX = /\[\[DELIVERY:(ENTREGADO|NO_ENTREGADO)\]\]/g;
-
-function isAuthenticated() {
-    const cookieStore = cookies();
-    return !!cookieStore.get('admin_token');
-}
 
 function startOfDay(date) {
     const d = new Date(date);
@@ -48,7 +43,7 @@ function injectDeliveryStatus(comments, deliveryStatus) {
 }
 
 export async function GET() {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -94,7 +89,7 @@ export async function GET() {
 }
 
 export async function PATCH(req) {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import styles from './Carousel.module.css';
 import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
+import { ChevronLeft, ChevronRight, Clock, Plus, Star } from 'lucide-react';
 
 export default function Carousel({ items }) {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -48,13 +49,16 @@ export default function Carousel({ items }) {
                     key={item.id}
                     className={`${styles.slide} ${index === currentIndex ? styles.active : ''}`}
                 >
-                    {/* Left Column: Image */}
                     <div className={styles.imageSide}>
                         <img src={getImgSrc(item.imagen)} alt={item.nombre} className={styles.image} />
+                        <span className={styles.badge}>
+                            <Star size={14} />
+                            Combo destacado
+                        </span>
                     </div>
 
-                    {/* Right Column: Text */}
                     <div className={styles.contentSide}>
+                        <span className={styles.meta}><Clock size={15} /> Listo en 20-35 min</span>
                         <h2 className={styles.title}>{item.nombre}</h2>
                         <p className={styles.description}>
                             {item.items || item.descripcion}
@@ -63,11 +67,11 @@ export default function Carousel({ items }) {
                         <div className={styles.actionRow}>
                             <span className={styles.price}>{formatPrice(item.precio)}</span>
                             <button
-                                className="btn btn-primary"
+                                className={`btn btn-primary ${styles.addButton}`}
                                 onClick={() => addToCart(item, true)}
-                                style={{ fontSize: '1.1rem', padding: '12px 24px' }}
                             >
-                                Agregar Pedido
+                                <Plus size={20} />
+                                Agregar
                             </button>
                         </div>
                     </div>
@@ -80,7 +84,7 @@ export default function Carousel({ items }) {
                 onClick={goToPrevSlide}
                 aria-label="Imagen anterior"
             >
-                &#10094;
+                <ChevronLeft size={22} />
             </button>
 
             <button
@@ -89,15 +93,17 @@ export default function Carousel({ items }) {
                 onClick={goToNextSlide}
                 aria-label="Imagen siguiente"
             >
-                &#10095;
+                <ChevronRight size={22} />
             </button>
 
             <div className={styles.controls}>
                 {items.map((_, idx) => (
-                    <div
+                    <button
+                        type="button"
                         key={idx}
                         className={`${styles.dot} ${idx === currentIndex ? styles.active : ''}`}
                         onClick={() => setCurrentIndex(idx)}
+                        aria-label={`Ver combo ${idx + 1}`}
                     />
                 ))}
             </div>

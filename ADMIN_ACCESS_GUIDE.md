@@ -11,11 +11,11 @@ http://localhost:3000/admin
 ### Paso 2: Ingresa la contraseña
 La contraseña se configura en el archivo `.env.local`:
 ```
-ADMIN_PASSWORD=admin123
+ADMIN_PASSWORD=<tu_password_admin>
 ```
 
-Por defecto es: **`admin123`**
-
+No hay password por defecto en este repositorio.
+En producción usa una contraseña fuerte y única (larga y aleatoria).
 Si quieres cambiarla, edita `.env.local` y reinicia el servidor.
 
 ### Paso 3: Accede al Dashboard
@@ -138,7 +138,7 @@ curl -X DELETE "http://localhost:3000/api/admin/products?id=1"
 ## 🎯 Ejemplo Completo
 
 1. **Vas a**: `http://localhost:3000/admin`
-2. **Ingresas contraseña**: `admin123` (por defecto)
+2. **Ingresas contraseña**: la configurada en `.env.local` en `ADMIN_PASSWORD`
 3. **Ves tabla** con productos actuales
 4. **Click en "Crear"** → Abre formulario
 5. **Rellenas**: 

@@ -2,21 +2,15 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { products } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { cookies } from 'next/headers';
 import { fetchAllProducts, createProduct, updateProduct, deleteProduct, getProductById } from '@/lib/catalog';
-
-// Middleware para verificar autenticación
-function isAuthenticated() {
-    const cookieStore = cookies();
-    return !!cookieStore.get('admin_token');
-}
+import { isAdminAuthenticated } from '@/lib/auth/adminAuth';
 
 /**
  * GET /api/admin/products
  * Retorna lista de todos los productos (incluyendo no disponibles)
  */
 export async function GET(req) {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -34,7 +28,7 @@ export async function GET(req) {
  * Crear nuevo producto
  */
 export async function POST(req) {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -56,7 +50,7 @@ export async function POST(req) {
  * Actualizar producto existente
  */
 export async function PATCH(req) {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -84,7 +78,7 @@ export async function PATCH(req) {
  * Eliminar producto
  */
 export async function DELETE(req) {
-    if (!isAuthenticated()) {
+    if (!isAdminAuthenticated()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
