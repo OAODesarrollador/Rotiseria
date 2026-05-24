@@ -6,10 +6,10 @@ import styles from './Footer.module.css';
 const footerBits = [
     '/images/Carne.png',
     '/images/PanAbajo.png',
-    '/images/tomate.png',
-    '/images/queso.png',
-    '/images/lechuga.png',
-    '/images/huevo.png',
+    '/images/Tomate.png',
+    '/images/Queso.png',
+    '/images/Lechuga.png',
+    '/images/Huevo.png',
     '/images/PanArriba.png',
 ];
 
