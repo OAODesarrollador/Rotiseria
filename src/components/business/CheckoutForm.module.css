@@ -12,6 +12,7 @@
 
 .sidebar {
     background: var(--surface);
+    color: var(--cream-soft);
     border-radius: var(--radius);
     padding: 1.25rem;
     box-shadow: var(--shadow-md);
@@ -19,6 +20,7 @@
 }
 
 .sidebarTitle {
+    color: var(--cream-soft);
     font-weight: 800;
     font-size: 1.25rem;
     margin-bottom: 1rem;
@@ -40,18 +42,22 @@
 
 .itemName {
     flex: 1;
+    color: var(--cream-soft);
 }
 
 .itemQty {
     opacity: 0.8;
+    color: var(--cream);
 }
 
 .itemPrice {
     font-weight: 600;
+    color: var(--warm);
 }
 
 .form {
     background: var(--surface);
+    color: var(--cream-soft);
     padding: 1.5rem;
     border-radius: var(--radius);
     box-shadow: var(--shadow-md);
@@ -65,7 +71,7 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: var(--text);
+    color: var(--cream-soft);
 }
 
 .input,
@@ -75,10 +81,23 @@
     padding: 12px;
     background: var(--background);
     border: 1px solid var(--surface-highlight);
-    color: white;
+    color: var(--ink);
     border-radius: 8px;
     font-family: inherit;
     font-size: 1rem;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+    color: rgba(74, 33, 24, 0.58);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    border-color: var(--warm);
+    box-shadow: 0 0 0 3px rgba(244, 167, 44, 0.24);
+    outline: none;
 }
 
 .textarea {
@@ -98,6 +117,7 @@
     cursor: pointer;
     padding: 10px;
     background: var(--surface-highlight);
+    color: var(--cream-soft);
     border-radius: 8px;
     flex: 1;
 }
@@ -112,12 +132,13 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.5rem;
+    color: var(--cream-soft);
 }
 
 .total {
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--primary);
+    color: var(--warm);
     margin-top: 1rem;
 }
 
@@ -147,6 +168,7 @@
     text-align: center;
     padding: 2rem;
     background: var(--surface);
+    color: var(--cream-soft);
     border-radius: var(--radius);
 }
 
@@ -183,6 +205,7 @@
     width: 100%;
     max-width: 520px;
     background: var(--surface);
+    color: var(--cream-soft);
     border-radius: 16px;
     padding: 24px;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
@@ -206,6 +229,7 @@
     border-radius: 12px;
     border: 1px solid var(--surface-highlight);
     background: rgba(255, 255, 255, 0.02);
+    color: var(--cream-soft);
     text-align: left;
     white-space: pre-wrap;
     word-break: break-word;
@@ -275,6 +299,7 @@
 
 .transferPanel {
     background: var(--surface);
+    color: var(--cream-soft);
     border-radius: var(--radius);
     padding: 1.75rem;
     box-shadow: var(--shadow-md);
@@ -311,7 +336,7 @@
 
 .transferLabel {
     font-weight: 700;
-    color: var(--text);
+    color: var(--cream);
 }
 
 .transferValueRow {
@@ -325,6 +350,7 @@
 .transferValue {
     font-weight: 600;
     letter-spacing: 0.2px;
+    color: var(--cream-soft);
 }
 
 .selectable {

@@ -186,8 +186,25 @@
     width: 100%;
     min-height: 52px;
     border-radius: 999px;
+    background: #f4a72c !important;
+    color: #4a2118 !important;
+    border: 2px solid #4a2118 !important;
+    box-shadow: 0 14px 28px rgba(244, 167, 44, 0.18);
     font-size: 1.05rem;
     font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.checkoutBtn:hover {
+    background: #ffd166 !important;
+    color: #4a2118 !important;
+    transform: translateY(-1px);
+}
+
+.checkoutBtn:focus-visible {
+    outline: 3px solid rgba(255, 246, 216, 0.75);
+    outline-offset: 3px;
 }
 
 .empty {
