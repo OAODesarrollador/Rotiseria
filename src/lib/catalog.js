@@ -17,30 +17,8 @@ export async function fetchCatalog() {
             db.select().from(config)
         ]);
 
-        // Map English DB fields to Spanish UI fields
-        // This avoids rewriting all components
-        // Normalize image URLs (handle Google Drive share links)
-        const normalizeImageUrl = (url) => {
-            if (!url) return url;
-            try {
-                // If it's a Google Drive share link, convert to direct view link
-                // Example: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
-                const driveFileMatch = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
-                if (driveFileMatch && driveFileMatch[1]) {
-                    return `https://drive.google.com/uc?export=view&id=${driveFileMatch[1]}`;
-                }
-
-                // Also accept open?id=FILE_ID style
-                const openIdMatch = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
-                if (openIdMatch && openIdMatch[1]) {
-                    return `https://drive.google.com/uc?export=view&id=${openIdMatch[1]}`;
-                }
-
-                return url;
-            } catch (e) {
-                return url;
-            }
-        };
+        // Map English DB fields to Spanish UI fields.
+        // This avoids rewriting all components.
 
         const mappedProducts = dbProducts.map(p => ({
             id: p.id,
@@ -48,7 +26,7 @@ export async function fetchCatalog() {
             descripcion: p.description,
             precio: p.price,
             categoria: p.category,
-            imagen: normalizeImageUrl(p.image),
+            imagen: p.image,
             disponible: p.available,
             orden: p.sortOrder
         }));
@@ -59,7 +37,7 @@ export async function fetchCatalog() {
             descripcion: c.description,
             precio: c.price,
             items: c.items,
-            imagen: normalizeImageUrl(c.image),
+            imagen: c.image,
             destacado: c.highlighted
         }));
 

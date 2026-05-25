@@ -3,6 +3,24 @@
 import { useEffect, useState } from 'react';
 import styles from './ComboEditor.module.css';
 
+function getPreviewSrc(src) {
+    if (!src) return '';
+
+    try {
+        const url = new URL(src, 'http://localhost');
+        if (
+            url.hostname.endsWith('.public.blob.vercel-storage.com')
+            || url.hostname.endsWith('.private.blob.vercel-storage.com')
+        ) {
+            return `/api/image/proxy?url=${encodeURIComponent(src)}`;
+        }
+    } catch {
+        // Keep local object URLs and relative paths as-is.
+    }
+
+    return src;
+}
+
 export default function ComboEditor({ combo = null, onSave, onCancel }) {
     const [formData, setFormData] = useState({
         id: '',
@@ -17,6 +35,8 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [selectedImageName, setSelectedImageName] = useState('');
+    const [previewUrl, setPreviewUrl] = useState('');
     const [message, setMessage] = useState('');
 
     useEffect(() => {
@@ -30,8 +50,18 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
                 imagen: combo.imagen || '',
                 destacado: combo.destacado === true
             });
+            setSelectedImageName(combo.imagen ? 'Imagen cargada' : '');
+            setPreviewUrl(getPreviewSrc(combo.imagen));
         }
     }, [combo]);
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl?.startsWith('blob:')) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -63,6 +93,11 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        setSelectedImageName(file.name);
+        if (previewUrl?.startsWith('blob:')) {
+            URL.revokeObjectURL(previewUrl);
+        }
+        setPreviewUrl(URL.createObjectURL(file));
         setUploadingImage(true);
         setMessage('');
 
@@ -75,16 +110,24 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
                 method: 'POST',
                 body: uploadData
             });
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (!response.ok) {
+                console.error('Error al subir imagen de combo', {
+                    status: response.status,
+                    error: result.error,
+                    details: result.details,
+                });
                 throw new Error(result.error || 'Error al subir imagen');
             }
 
             setFormData(prev => ({ ...prev, imagen: result.url }));
+            setPreviewUrl(getPreviewSrc(result.url));
             setMessage('Imagen subida correctamente');
         } catch (error) {
             setMessage(`Error: ${error.message}`);
+            setSelectedImageName('');
+            setPreviewUrl('');
         } finally {
             setUploadingImage(false);
             e.target.value = '';
@@ -128,6 +171,8 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
                     imagen: '',
                     destacado: false
                 });
+                setSelectedImageName('');
+                setPreviewUrl('');
             }
         } catch (error) {
             setMessage(`Error: ${error.message}`);
@@ -220,15 +265,7 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label htmlFor="imagen">URL de Imagen</label>
-                        <input
-                            id="imagen"
-                            type="text"
-                            name="imagen"
-                            value={formData.imagen}
-                            onChange={handleChange}
-                            placeholder="/images/combo.jpg"
-                        />
+                        <label htmlFor="comboImagenUpload">Imagen</label>
                         <label htmlFor="comboImagenUpload" className={styles.fileLabel}>
                             Subir imagen a Vercel Blob
                         </label>
@@ -240,9 +277,10 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
                             disabled={uploadingImage || loading}
                         />
                         {uploadingImage && <small>Subiendo imagen...</small>}
-                        {formData.imagen && (
+                        {selectedImageName && <small>Archivo: {selectedImageName}</small>}
+                        {previewUrl && (
                             <div className={styles.imagePreview}>
-                                <img src={formData.imagen} alt="Vista previa del combo" />
+                                <img src={previewUrl} alt="Vista previa del combo" />
                             </div>
                         )}
                     </div>

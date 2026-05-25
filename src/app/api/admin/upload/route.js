@@ -57,9 +57,10 @@ export async function POST(req) {
         const fileName = sanitizeFileName(file.name);
         const pathname = `${folder}/${Date.now()}-${fileName}`;
         const blob = await put(pathname, file, {
-            access: 'public',
+            access: 'private',
             addRandomSuffix: true,
             contentType: file.type,
+            token: process.env.BLOB_READ_WRITE_TOKEN,
         });
 
         return NextResponse.json({
@@ -69,8 +70,12 @@ export async function POST(req) {
         });
     } catch (error) {
         console.error('POST /api/admin/upload error:', error);
+        const message = error?.message || 'No se pudo subir la imagen';
         return NextResponse.json(
-            { error: error.message || 'No se pudo subir la imagen' },
+            {
+                error: message,
+                details: process.env.NODE_ENV === 'production' ? undefined : error?.cause?.message,
+            },
             { status: 500 }
         );
     }

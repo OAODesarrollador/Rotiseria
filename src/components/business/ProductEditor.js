@@ -3,6 +3,24 @@
 import { useState, useEffect } from 'react';
 import styles from './ProductEditor.module.css';
 
+function getPreviewSrc(src) {
+    if (!src) return '';
+
+    try {
+        const url = new URL(src, 'http://localhost');
+        if (
+            url.hostname.endsWith('.public.blob.vercel-storage.com')
+            || url.hostname.endsWith('.private.blob.vercel-storage.com')
+        ) {
+            return `/api/image/proxy?url=${encodeURIComponent(src)}`;
+        }
+    } catch {
+        // Keep local object URLs and relative paths as-is.
+    }
+
+    return src;
+}
+
 export default function ProductEditor({ product = null, onSave, onCancel }) {
     const [formData, setFormData] = useState({
         nombre: '',
@@ -17,6 +35,8 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [selectedImageName, setSelectedImageName] = useState('');
+    const [previewUrl, setPreviewUrl] = useState('');
     const [message, setMessage] = useState('');
     const defaultCategories = ['LA PARRILLA', 'COMBOS', 'BEBIDAS', 'POSTRES', 'EXTRAS'];
     const [categories, setCategories] = useState(defaultCategories);
@@ -33,8 +53,18 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
                 disponible: product.disponible !== false,
                 orden: product.orden || 99
             });
+            setSelectedImageName(product.imagen ? 'Imagen cargada' : '');
+            setPreviewUrl(getPreviewSrc(product.imagen));
         }
     }, [product]);
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl?.startsWith('blob:')) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
 
     // Obtener categorías desde la API (admin)
     useEffect(() => {
@@ -88,6 +118,11 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        setSelectedImageName(file.name);
+        if (previewUrl?.startsWith('blob:')) {
+            URL.revokeObjectURL(previewUrl);
+        }
+        setPreviewUrl(URL.createObjectURL(file));
         setUploadingImage(true);
         setMessage('');
 
@@ -100,16 +135,24 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
                 method: 'POST',
                 body: uploadData
             });
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (!response.ok) {
+                console.error('Error al subir imagen de producto', {
+                    status: response.status,
+                    error: result.error,
+                    details: result.details,
+                });
                 throw new Error(result.error || 'Error al subir imagen');
             }
 
             setFormData(prev => ({ ...prev, imagen: result.url }));
+            setPreviewUrl(getPreviewSrc(result.url));
             setMessage('Imagen subida correctamente');
         } catch (error) {
             setMessage(`Error: ${error.message}`);
+            setSelectedImageName('');
+            setPreviewUrl('');
         } finally {
             setUploadingImage(false);
             e.target.value = '';
@@ -160,6 +203,8 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
                     disponible: true,
                     orden: 99
                 });
+                setSelectedImageName('');
+                setPreviewUrl('');
             }
         } catch (error) {
             setMessage(`Error: ${error.message}`);
@@ -254,15 +299,7 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label htmlFor="imagen">URL de Imagen</label>
-                        <input
-                            id="imagen"
-                            type="text"
-                            name="imagen"
-                            value={formData.imagen}
-                            onChange={handleChange}
-                            placeholder="/images/producto.jpg"
-                        />
+                        <label htmlFor="imagenUpload">Imagen</label>
                         <label htmlFor="imagenUpload" className={styles.fileLabel}>
                             Subir imagen a Vercel Blob
                         </label>
@@ -274,9 +311,10 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
                             disabled={uploadingImage || loading}
                         />
                         {uploadingImage && <small>Subiendo imagen...</small>}
-                        {formData.imagen && (
+                        {selectedImageName && <small>Archivo: {selectedImageName}</small>}
+                        {previewUrl && (
                             <div className={styles.imagePreview}>
-                                <img src={formData.imagen} alt="Vista previa del producto" />
+                                <img src={previewUrl} alt="Vista previa del producto" />
                             </div>
                         )}
                     </div>

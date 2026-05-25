@@ -14,7 +14,13 @@ export default function Carousel({ items }) {
         const raw = src || '/images/Logo.jpg';
         try {
             const u = new URL(raw, 'http://localhost');
-            if (u.hostname && (u.hostname.includes('drive.google.com') || u.hostname.includes('lh3.googleusercontent.com'))) {
+            if (
+                u.hostname
+                && (
+                    u.hostname.endsWith('.public.blob.vercel-storage.com')
+                    || u.hostname.endsWith('.private.blob.vercel-storage.com')
+                )
+            ) {
                 return `/api/image/proxy?url=${encodeURIComponent(raw)}`;
             }
         } catch {

@@ -5,6 +5,43 @@ import { useRouter } from 'next/navigation';
 import ProductEditor from '@/components/business/ProductEditor';
 import styles from './AdminProductList.module.css';
 
+function getAdminImageSrc(src) {
+    if (!src) return '';
+
+    try {
+        const url = new URL(src, 'http://localhost');
+        if (
+            url.hostname.endsWith('.public.blob.vercel-storage.com')
+            || url.hostname.endsWith('.private.blob.vercel-storage.com')
+        ) {
+            return `/api/image/proxy?url=${encodeURIComponent(src)}`;
+        }
+    } catch {
+        // Keep local or relative paths as-is.
+    }
+
+    return src;
+}
+
+function ProductImageThumb({ src, name }) {
+    const [failed, setFailed] = useState(false);
+    const imageSrc = getAdminImageSrc(src);
+
+    if (!imageSrc || failed) {
+        return <span className={styles.imagePlaceholder}>Sin imagen</span>;
+    }
+
+    return (
+        <img
+            src={imageSrc}
+            alt={name ? `Imagen de ${name}` : 'Imagen del producto'}
+            className={styles.productThumb}
+            loading="lazy"
+            onError={() => setFailed(true)}
+        />
+    );
+}
+
 export default function AdminProductList() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -157,6 +194,7 @@ export default function AdminProductList() {
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Imagen</th>
                                     <th>Nombre</th>
                                     <th>Categoría</th>
                                     <th>Precio</th>
@@ -169,6 +207,9 @@ export default function AdminProductList() {
                                     filteredProducts.map(product => (
                                         <tr key={product.id}>
                                             <td>{product.id}</td>
+                                            <td className={styles.thumbCell}>
+                                                <ProductImageThumb src={product.imagen} name={product.nombre} />
+                                            </td>
                                             <td className={styles.nameCell}>
                                                 {product.nombre}
                                                 {product.descripcion && (
@@ -202,7 +243,7 @@ export default function AdminProductList() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="6" className={styles.noResults}>
+                                        <td colSpan="7" className={styles.noResults}>
                                             No se encontraron productos
                                         </td>
                                     </tr>
