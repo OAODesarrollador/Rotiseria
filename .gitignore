@@ -43,13 +43,11 @@ next-env.d.ts
 # vercel (local build/output)
 .vercel
 
-# local database
-#local.db
-
 # local databases and dumps
 local.db
 **/local.db
 local_dump*.sql
+*_dump*.sql
 *.db
 *.sqlite
 *.sqlite3
@@ -61,7 +59,7 @@ venv/
 # logs
 *.log
 
-# repository-only operational files are kept; ignore local docs and one-off notes
+# local docs and one-off notes
 *.md
 !README.md
 
@@ -74,7 +72,7 @@ SETUP_GUIDE.md
 EJEMPLO_PLANILLA.txt
 page-content.html
 
-# one-off migration, dump, test and inspection scripts at repo root
+# one-off migration, dump, test and inspection files
 /*.sql
 /*.py
 /*migration*.js
@@ -88,6 +86,7 @@ page-content.html
 /read-local-db.py
 /test-migration.js
 /test-turso.mjs
+/scripts/
 
 # nested local artifacts/copies
 /la-parrilla-app/
