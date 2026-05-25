@@ -203,11 +203,11 @@ export default function StatisticsClient() {
                             <strong>{stats.availabilityRate}%</strong>
                         </article>
                         <article className={styles.statCard}>
-                            <span className={styles.label}>Combos Totales</span>
+                            <span className={styles.label}>Ofertas Totales</span>
                             <strong>{stats.combos}</strong>
                         </article>
                         <article className={styles.statCard}>
-                            <span className={styles.label}>Combos Destacados</span>
+                            <span className={styles.label}>Ofertas Destacadas</span>
                             <strong>{stats.featuredCombos}</strong>
                         </article>
                         <article className={styles.statCard}>

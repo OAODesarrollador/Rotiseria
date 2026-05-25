@@ -4,7 +4,7 @@ import { isAdminAuthenticated } from '@/lib/auth/adminAuth';
 
 /**
  * GET /api/admin/combos
- * Retorna lista de combos
+ * Retorna lista de ofertas
  */
 export async function GET() {
     if (!isAdminAuthenticated()) {
@@ -16,13 +16,13 @@ export async function GET() {
         return NextResponse.json({ success: true, data: allCombos });
     } catch (error) {
         console.error("GET /api/admin/combos error:", error);
-        return NextResponse.json({ error: 'Failed to fetch combos' }, { status: 500 });
+        return NextResponse.json({ error: 'Error al cargar ofertas' }, { status: 500 });
     }
 }
 
 /**
  * POST /api/admin/combos
- * Crear nuevo combo
+ * Crear nueva oferta
  */
 export async function POST(req) {
     if (!isAdminAuthenticated()) {
@@ -36,7 +36,7 @@ export async function POST(req) {
     } catch (error) {
         console.error("POST /api/admin/combos error:", error);
         return NextResponse.json(
-            { error: error.message || 'Failed to create combo' },
+            { error: error.message || 'Error al crear oferta' },
             { status: 400 }
         );
     }
@@ -44,7 +44,7 @@ export async function POST(req) {
 
 /**
  * PATCH /api/admin/combos
- * Actualizar combo existente
+ * Actualizar oferta existente
  */
 export async function PATCH(req) {
     if (!isAdminAuthenticated()) {
@@ -56,7 +56,7 @@ export async function PATCH(req) {
         const { id, ...updates } = body;
 
         if (!id) {
-            return NextResponse.json({ error: 'Combo ID is required' }, { status: 400 });
+            return NextResponse.json({ error: 'El ID de la oferta es requerido' }, { status: 400 });
         }
 
         const result = await updateCombo(id, updates);
@@ -64,7 +64,7 @@ export async function PATCH(req) {
     } catch (error) {
         console.error("PATCH /api/admin/combos error:", error);
         return NextResponse.json(
-            { error: error.message || 'Failed to update combo' },
+            { error: error.message || 'Error al actualizar oferta' },
             { status: 400 }
         );
     }
@@ -72,7 +72,7 @@ export async function PATCH(req) {
 
 /**
  * DELETE /api/admin/combos?id=<comboId>
- * Eliminar combo
+ * Eliminar oferta
  */
 export async function DELETE(req) {
     if (!isAdminAuthenticated()) {
@@ -84,7 +84,7 @@ export async function DELETE(req) {
         const id = searchParams.get('id');
 
         if (!id) {
-            return NextResponse.json({ error: 'Combo ID is required' }, { status: 400 });
+            return NextResponse.json({ error: 'El ID de la oferta es requerido' }, { status: 400 });
         }
 
         const result = await deleteCombo(id);
@@ -92,7 +92,7 @@ export async function DELETE(req) {
     } catch (error) {
         console.error("DELETE /api/admin/combos error:", error);
         return NextResponse.json(
-            { error: error.message || 'Failed to delete combo' },
+            { error: error.message || 'Error al eliminar oferta' },
             { status: 400 }
         );
     }

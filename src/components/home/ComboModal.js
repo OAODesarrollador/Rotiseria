@@ -22,7 +22,7 @@ export default function ComboModal({ isOpen, onClose, combos }) {
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.header}>
-                    <h2 className={styles.title}>Nuestros Combos</h2>
+                    <h2 className={styles.title}>Nuestras Ofertas</h2>
                     <button className={`btn btn-secondary ${styles.closeBtn}`} onClick={onClose}>
                         <X size={20} />
                     </button>

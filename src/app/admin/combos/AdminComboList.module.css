@@ -173,6 +173,37 @@
     word-break: break-word;
 }
 
+.thumbCell {
+    width: 88px;
+}
+
+.comboThumb,
+.imagePlaceholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+}
+
+.comboThumb {
+    display: block;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: #2f251c;
+}
+
+.imagePlaceholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e9d8b4;
+    border: 1px dashed rgba(233, 216, 180, 0.35);
+    font-size: 0.72rem;
+    line-height: 1.1;
+    text-align: center;
+}
+
 .nameCell small {
     display: block;
     color: #a3a3a3;
@@ -272,5 +303,9 @@
         width: 100%;
         min-width: 0;
         flex-direction: column;
+    }
+
+    .thumbCell {
+        width: auto;
     }
 }

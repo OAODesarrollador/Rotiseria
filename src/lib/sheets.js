@@ -8,7 +8,7 @@ const MOCK_DATA = {
         { id: '4', nombre: 'Vacio a la Parrilla', descripcion: 'Porcion tierna', precio: 14000, categoria: 'Parrilla', imagen: '/images/Lista.jpg', disponible: true },
     ],
     combos: [
-        { id: 'c1', nombre: 'Combo Familiar', descripcion: '1 Pollo + 1 Pizza + Coca 1.5L', precio: 18000, items: 'Pollo, Pizza, Coca', imagen: '/images/combo1.jpg', destacado: true },
+        { id: 'c1', nombre: 'Oferta Familiar', descripcion: '1 Pollo + 1 Pizza + Coca 1.5L', precio: 18000, items: 'Pollo, Pizza, Coca', imagen: '/images/combo1.jpg', destacado: true },
         { id: 'c2', nombre: 'Parrillada x2', descripcion: 'Asado, Vacio, Chori, Morci', precio: 22000, items: 'Asado, Vacio', imagen: '/images/Combo2.jpg', destacado: true },
         { id: 'c3', nombre: 'Sandwich Mila Pack', descripcion: '2 Sandwiches + Papas', precio: 18000, items: '2 Sanguches, Papas', imagen: '/images/Combo3.jpg', destacado: true },
         { id: 'c4', nombre: 'Super Picada', descripcion: 'Fiambres varios y queso', precio: 15000, items: 'Salame, Queso, Pan', imagen: '/images/combo4.jpg', destacado: true },
@@ -67,7 +67,7 @@ export async function fetchCatalog() {
             orden: Number(p.orden || 99)
         })).filter(p => p.id); // Valid rows only
 
-        // Format Combos
+        // Format offers
         const combos = combosRaw.map(c => ({
             ...c,
             precio: Number(c.precio),

@@ -53,7 +53,7 @@ export default function HeroSection({ highlightedCombos, allCombos, productCount
                         <span>La Parrilla</span>
                     </h1>
                     <p className={styles.subtitle}>
-                        Comida casera, combos abundantes y platos listos para retirar o recibir.
+                        Comida casera, ofertas abundantes y platos listos para retirar o recibir.
                     </p>
                     <div className={styles.actions}>
                         <a className={`btn btn-primary ${styles.cta}`} href="#productos">
@@ -62,7 +62,7 @@ export default function HeroSection({ highlightedCombos, allCombos, productCount
                         </a>
                         {allCombos?.length > 0 && (
                             <button type="button" onClick={openModal} className={`btn btn-secondary ${styles.secondaryCta}`}>
-                                Ver combos
+                                Ver ofertas
                             </button>
                         )}
                     </div>
@@ -89,13 +89,13 @@ export default function HeroSection({ highlightedCombos, allCombos, productCount
             <div className={styles.marquee} aria-hidden="true">
                 <div>
                     <span>minutas calientes</span>
-                    <span>combos abundantes</span>
+                    <span>ofertas abundantes</span>
                     <span>retirá o pedí envío</span>
                     <span>rotisería local</span>
                 </div>
                 <div>
                     <span>minutas calientes</span>
-                    <span>combos abundantes</span>
+                    <span>ofertas abundantes</span>
                     <span>retirá o pedí envío</span>
                     <span>rotisería local</span>
                 </div>

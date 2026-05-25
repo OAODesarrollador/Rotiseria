@@ -36,7 +36,7 @@ export default async function Home() {
           <div className="menu-heading">
             <span className="eyebrow">Carta caliente</span>
             <h2 className="section-title">Elegí tu pedido</h2>
-            <p>Platos de rotisería, combos y favoritos listos para sumar al carrito.</p>
+            <p>Platos de rotisería, ofertas y favoritos listos para sumar al carrito.</p>
           </div>
           <ProductGrid items={products} isCombo={false} showFilters={true} />
         </section>

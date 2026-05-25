@@ -15,7 +15,7 @@ const options = [
     {
         href: '/admin/statistics',
         title: 'Estadísticas',
-        description: 'Ver métricas rápidas de productos, combos y categorías.',
+        description: 'Ver métricas rápidas de productos, ofertas y categorías.',
         icon: '📊'
     },
     {
@@ -26,8 +26,8 @@ const options = [
     },
     {
         href: '/admin/combos',
-        title: 'Combos',
-        description: 'Gestionar combos, precios, items y contenido destacado.',
+        title: 'Ofertas',
+        description: 'Gestionar ofertas, precios, items y contenido destacado.',
         icon: '🍱'
     },
     {

@@ -1,10 +1,10 @@
 # Rotiseria - E-commerce y administración para gastronomía
 
-Aplicación web para gestionar el catálogo, ventas y pedidos de una rotisería/parrilla. Incluye catálogo público con carrito, checkout, pagos con Mercado Pago, y un panel de administración para productos, combos y pedidos.
+Aplicación web para gestionar el catálogo, ventas y pedidos de una rotisería/parrilla. Incluye catálogo público con carrito, checkout, pagos con Mercado Pago, y un panel de administración para productos, ofertas y pedidos.
 
 ## Funcionalidades principales
 
-- Catálogo de productos y combos con imágenes y orden configurable.
+- Catálogo de productos y ofertas con imágenes y orden configurable.
 - Carrito y checkout con métodos de entrega (retiro o envío).
 - Pagos con Mercado Pago y actualización de estado vía webhook.
 - Gestión de pedidos con estado y detalle de items.

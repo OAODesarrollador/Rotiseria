@@ -5,6 +5,43 @@ import { useRouter } from 'next/navigation';
 import ComboEditor from '@/components/business/ComboEditor';
 import styles from './AdminComboList.module.css';
 
+function getComboImageSrc(src) {
+    if (!src) return '';
+
+    try {
+        const url = new URL(src, 'http://localhost');
+        if (
+            url.hostname.endsWith('.public.blob.vercel-storage.com')
+            || url.hostname.endsWith('.private.blob.vercel-storage.com')
+        ) {
+            return `/api/image/proxy?url=${encodeURIComponent(src)}`;
+        }
+    } catch {
+        // Keep local or relative paths as-is.
+    }
+
+    return src;
+}
+
+function ComboImageThumb({ src, name }) {
+    const [failed, setFailed] = useState(false);
+    const imageSrc = getComboImageSrc(src);
+
+    if (!imageSrc || failed) {
+        return <span className={styles.imagePlaceholder}>Sin imagen</span>;
+    }
+
+    return (
+        <img
+            src={imageSrc}
+            alt={name ? `Imagen de ${name}` : 'Imagen de la oferta'}
+            className={styles.comboThumb}
+            loading="lazy"
+            onError={() => setFailed(true)}
+        />
+    );
+}
+
 export default function AdminComboList() {
     const [combos, setCombos] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,7 +63,7 @@ export default function AdminComboList() {
                 const data = await response.json();
                 setCombos(data.data || []);
             } else {
-                setMessage('Error al cargar combos');
+                setMessage('Error al cargar ofertas');
             }
         } catch (error) {
             setMessage(`Error: ${error.message}`);
@@ -36,7 +73,7 @@ export default function AdminComboList() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('¿Estás seguro de que quieres eliminar este combo?')) {
+        if (!confirm('¿Estás seguro de que quieres eliminar esta oferta?')) {
             return;
         }
 
@@ -46,10 +83,10 @@ export default function AdminComboList() {
             });
 
             if (response.ok) {
-                setMessage('Combo eliminado');
+                setMessage('Oferta eliminada');
                 fetchCombos();
             } else {
-                setMessage('Error al eliminar combo');
+                setMessage('Error al eliminar oferta');
             }
         } catch (error) {
             setMessage(`Error: ${error.message}`);
@@ -61,14 +98,14 @@ export default function AdminComboList() {
     );
 
     if (loading && combos.length === 0) {
-        return <div className={styles.loading}>Cargando combos...</div>;
+        return <div className={styles.loading}>Cargando ofertas...</div>;
     }
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <div>
-                    <h1>🍱 Gestión de Combos</h1>
+                    <h1>🍱 Gestión de Ofertas</h1>
                     <p className={styles.subtitle}>Administra precios, descripciones, items e imágenes</p>
                 </div>
                 <div className={styles.headerActions}>
@@ -111,7 +148,7 @@ export default function AdminComboList() {
                             className={`btn btn-primary ${styles.createBtn}`}
                             onClick={() => setShowForm(!showForm)}
                         >
-                            + Crear Nuevo Combo
+                            + Crear Nueva Oferta
                         </button>
 
                         <div className={styles.filters}>
@@ -130,6 +167,7 @@ export default function AdminComboList() {
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Imagen</th>
                                     <th>Nombre</th>
                                     <th>Precio</th>
                                     <th>Destacado</th>
@@ -141,6 +179,9 @@ export default function AdminComboList() {
                                     filteredCombos.map(combo => (
                                         <tr key={combo.id}>
                                             <td>{combo.id}</td>
+                                            <td className={styles.thumbCell}>
+                                                <ComboImageThumb src={combo.imagen} name={combo.nombre} />
+                                            </td>
                                             <td className={styles.nameCell}>
                                                 {combo.nombre}
                                                 {(combo.items || combo.descripcion) && (
@@ -173,8 +214,8 @@ export default function AdminComboList() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="5" className={styles.noResults}>
-                                            No se encontraron combos
+                                        <td colSpan="6" className={styles.noResults}>
+                                            No se encontraron ofertas
                                         </td>
                                     </tr>
                                 )}
@@ -183,7 +224,7 @@ export default function AdminComboList() {
                     </div>
 
                     <div className={styles.summary}>
-                        Total: {filteredCombos.length} combos
+                        Total: {filteredCombos.length} ofertas
                     </div>
                 </>
             )}

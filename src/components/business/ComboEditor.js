@@ -113,7 +113,7 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
             const result = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                console.error('Error al subir imagen de combo', {
+                console.error('Error al subir imagen de oferta', {
                     status: response.status,
                     error: result.error,
                     details: result.details,
@@ -155,10 +155,10 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Error al guardar combo');
+                throw new Error(errorData.error || 'Error al guardar oferta');
             }
 
-            setMessage(combo ? 'Combo actualizado' : 'Combo creado');
+            setMessage(combo ? 'Oferta actualizada' : 'Oferta creada');
             if (onSave) onSave();
 
             if (!combo) {
@@ -183,7 +183,7 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
 
     return (
         <div className={styles.editor}>
-            <h2>{combo ? 'Editar Combo' : 'Crear Nuevo Combo'}</h2>
+            <h2>{combo ? 'Editar Oferta' : 'Crear Nueva Oferta'}</h2>
 
             {message && (
                 <div className={`${styles.message} ${message.includes('Error') ? styles.error : styles.success}`}>
@@ -215,7 +215,7 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
                         name="nombre"
                         value={formData.nombre}
                         onChange={handleChange}
-                        placeholder="Ej: Combo Familiar"
+                        placeholder="Ej: Oferta Familiar"
                         maxLength="100"
                     />
                     {errors.nombre && <span className={styles.error}>{errors.nombre}</span>}
@@ -280,7 +280,7 @@ export default function ComboEditor({ combo = null, onSave, onCancel }) {
                         {selectedImageName && <small>Archivo: {selectedImageName}</small>}
                         {previewUrl && (
                             <div className={styles.imagePreview}>
-                                <img src={previewUrl} alt="Vista previa del combo" />
+                                <img src={previewUrl} alt="Vista previa de la oferta" />
                             </div>
                         )}
                     </div>

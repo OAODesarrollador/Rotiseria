@@ -119,8 +119,8 @@ export default function AdminProductList() {
                 </div>
                 <div className={styles.headerActions}>
                    
-                    <button onClick={() => router.push('/admin/combos')} className={`btn btn-secondary ${styles.combosBtn}`} title="Gestionar Combos">
-                        🍱 Combos
+                    <button onClick={() => router.push('/admin/combos')} className={`btn btn-secondary ${styles.combosBtn}`} title="Gestionar Ofertas">
+                        🍱 Ofertas
                     </button>
                     <button onClick={() => router.push('/admin/categories')} className={`btn btn-secondary ${styles.categoriesBtn}`} title="Gestionar Categorías">
                         🗂️ Categorías

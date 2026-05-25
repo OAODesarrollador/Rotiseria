@@ -38,7 +38,7 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
     const [selectedImageName, setSelectedImageName] = useState('');
     const [previewUrl, setPreviewUrl] = useState('');
     const [message, setMessage] = useState('');
-    const defaultCategories = ['LA PARRILLA', 'COMBOS', 'BEBIDAS', 'POSTRES', 'EXTRAS'];
+    const defaultCategories = ['LA PARRILLA', 'OFERTAS', 'BEBIDAS', 'POSTRES', 'EXTRAS'];
     const [categories, setCategories] = useState(defaultCategories);
 
     // Cargar datos del producto si es edición

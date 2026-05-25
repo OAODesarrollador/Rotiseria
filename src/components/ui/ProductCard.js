@@ -47,7 +47,7 @@ export default function ProductCard({ item, isCombo = false, index = 0 }) {
                 />
                 <div className={styles.badges}>
                     {item.categoria && <span>{item.categoria}</span>}
-                    {isCombo && <span><Sparkles size={13} /> Combo</span>}
+                    {isCombo && <span><Sparkles size={13} /> Oferta</span>}
                     {!isCombo && index % 4 === 0 && <span><Star size={13} /> Popular</span>}
                     {!isCombo && /picante|fugazzeta|milanesa/i.test(`${item.nombre} ${item.descripcion || ''}`) && (
                         <span><Flame size={13} /> Intenso</span>
@@ -65,14 +65,14 @@ export default function ProductCard({ item, isCombo = false, index = 0 }) {
                 <div className={styles.meta}>
                     <span>Detalles rápidos</span>
                     <span>20-35 min</span>
-                    <span>{item.categoria || (isCombo ? 'Combo' : 'Rotisería')}</span>
+                    <span>{item.categoria || (isCombo ? 'Oferta' : 'Rotisería')}</span>
                     <span>{index % 3 === 0 ? 'Popular' : 'Casero'}</span>
                 </div>
                 <div className={styles.actions}>
                     <button
                         className={`btn btn-primary ${styles.addButton} ${justAdded ? styles.added : ''}`}
                         onClick={handleAdd}
-                        disabled={!item.disponible && !isCombo} // Combos assumed available unless logic added
+                        disabled={!item.disponible && !isCombo}
                     >
                         {item.disponible !== false ? (
                             <>

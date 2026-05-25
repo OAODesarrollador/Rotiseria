@@ -59,7 +59,7 @@ export default function Carousel({ items }) {
                         <img src={getImgSrc(item.imagen)} alt={item.nombre} className={styles.image} />
                         <span className={styles.badge}>
                             <Star size={14} />
-                            Combo destacado
+                            Oferta destacada
                         </span>
                     </div>
 
@@ -109,7 +109,7 @@ export default function Carousel({ items }) {
                         key={idx}
                         className={`${styles.dot} ${idx === currentIndex ? styles.active : ''}`}
                         onClick={() => setCurrentIndex(idx)}
-                        aria-label={`Ver combo ${idx + 1}`}
+                        aria-label={`Ver oferta ${idx + 1}`}
                     />
                 ))}
             </div>

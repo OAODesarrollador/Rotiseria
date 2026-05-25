@@ -181,7 +181,7 @@ export async function getProductById(id) {
 }
 
 /**
- * Obtener todos los combos - para admin
+ * Obtener todas las ofertas - para admin
  */
 export async function fetchAllCombos() {
     try {
@@ -196,13 +196,13 @@ export async function fetchAllCombos() {
             destacado: c.highlighted
         }));
     } catch (error) {
-        console.error("Error fetching all combos:", error);
+        console.error("Error fetching all offers:", error);
         return [];
     }
 }
 
 /**
- * Crear nuevo combo
+ * Crear nueva oferta
  */
 export async function createCombo(data) {
     try {
@@ -224,13 +224,13 @@ export async function createCombo(data) {
 
         return { success: true };
     } catch (error) {
-        console.error("Error creating combo:", error);
+        console.error("Error creating offer:", error);
         throw error;
     }
 }
 
 /**
- * Actualizar combo existente
+ * Actualizar oferta existente
  */
 export async function updateCombo(id, data) {
     try {
@@ -254,26 +254,26 @@ export async function updateCombo(id, data) {
 
         return { success: true };
     } catch (error) {
-        console.error("Error updating combo:", error);
+        console.error("Error updating offer:", error);
         throw error;
     }
 }
 
 /**
- * Eliminar combo
+ * Eliminar oferta
  */
 export async function deleteCombo(id) {
     try {
         await db.delete(combos).where(eq(combos.id, id.trim()));
         return { success: true };
     } catch (error) {
-        console.error("Error deleting combo:", error);
+        console.error("Error deleting offer:", error);
         throw error;
     }
 }
 
 /**
- * Obtener un combo por ID
+ * Obtener una oferta por ID
  */
 export async function getComboById(id) {
     try {
@@ -291,7 +291,7 @@ export async function getComboById(id) {
             destacado: c.highlighted
         };
     } catch (error) {
-        console.error("Error fetching combo:", error);
+        console.error("Error fetching offer:", error);
         return null;
     }
 }
