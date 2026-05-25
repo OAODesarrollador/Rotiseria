@@ -16,6 +16,7 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
     const [message, setMessage] = useState('');
     const defaultCategories = ['LA PARRILLA', 'COMBOS', 'BEBIDAS', 'POSTRES', 'EXTRAS'];
     const [categories, setCategories] = useState(defaultCategories);
@@ -80,6 +81,38 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
         // Limpiar error del campo
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
+        }
+    };
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingImage(true);
+        setMessage('');
+
+        try {
+            const uploadData = new FormData();
+            uploadData.append('file', file);
+            uploadData.append('folder', 'productos');
+
+            const response = await fetch('/api/admin/upload', {
+                method: 'POST',
+                body: uploadData
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Error al subir imagen');
+            }
+
+            setFormData(prev => ({ ...prev, imagen: result.url }));
+            setMessage('Imagen subida correctamente');
+        } catch (error) {
+            setMessage(`Error: ${error.message}`);
+        } finally {
+            setUploadingImage(false);
+            e.target.value = '';
         }
     };
 
@@ -230,6 +263,22 @@ export default function ProductEditor({ product = null, onSave, onCancel }) {
                             onChange={handleChange}
                             placeholder="/images/producto.jpg"
                         />
+                        <label htmlFor="imagenUpload" className={styles.fileLabel}>
+                            Subir imagen a Vercel Blob
+                        </label>
+                        <input
+                            id="imagenUpload"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp,image/gif"
+                            onChange={handleImageUpload}
+                            disabled={uploadingImage || loading}
+                        />
+                        {uploadingImage && <small>Subiendo imagen...</small>}
+                        {formData.imagen && (
+                            <div className={styles.imagePreview}>
+                                <img src={formData.imagen} alt="Vista previa del producto" />
+                            </div>
+                        )}
                     </div>
                 </div>
 
